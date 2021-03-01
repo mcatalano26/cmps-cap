@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>{{ title }}</title>
+{% endblock %}
+
+{% block body %}
+<h1>{{title}}</h1>
+<div class="text-right">
+    <form action = '/'>
+        <button type='submit'>Try another link!</button>
+    </form>
+</div>
+ 
+<p> {{selftext}} </p>
+<h2> Comments </h2>
+    {% for comment in comments %}
+    <p> {{ comment }} </p>
+    {% endfor %}
+
+{% endblock %}
+
