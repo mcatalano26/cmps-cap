@@ -28,6 +28,7 @@ def showPosts():
     title = submission.title
     selftext = submission.selftext
     comments = []
+    submission.comments.replace_more(limit=0)
     for comment in submission.comments:
         comments.append(comment.body)   
     return render_template('post.html', comments = comments, title = title, selftext = selftext)
