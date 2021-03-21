@@ -8,3 +8,6 @@ features,test size,percent correct
 "['WordScore', 'WholeScore', 'tfidf', 'contains_url', 'adjWordScore', 'profanity', 'contains_!', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop']",0.33,75.90290112492599
 "['WordScore', 'WholeScore', 'tfidf', 'contains_url', 'adjWordScore', 'profanity', 'contains_!', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop']",0.33,75.60686796921256
 "['WordScore', 'WholeScore', 'tfidf', 'contains_url', 'adjWordScore', 'profanity', 'contains_!', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop']",0.33,75.25162818235643
+"['WordScore', 'WholeScore', 'tfidf', 'contains_url', 'adjWordScore', 'profanity', 'contains_!', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop']",0.33,75.34043812907045
+"['WordScore', 'WholeScore', 'tfidf', 'contains_url', 'adjWordScore', 'profanity', 'contains_!', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop']",0.33,76.02131438721138
+"['WordScore', 'WholeScore', 'tfidf', 'contains_url', 'adjWordScore', 'profanity', 'contains_!', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop']",0.33,74.54114860864416
