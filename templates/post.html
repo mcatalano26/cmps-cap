@@ -14,11 +14,12 @@
  
 <p> {{selftext}} </p>
 <h2> Comments </h2>
+<ol>
     {% for comment in comments %}
-    <br>
-    <p> {{ comment }} </p>
+    <li> {{ comment }} </li>
     <br>
     {% endfor %}
+</ol>
 
 {% endblock %}
 
