@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type=text/javascript>
+        $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script>
+
+    <!-- how to link in css/javascript files-->
+    <!-- <link rel="stylesheet" href="static/css/main.css"> -->
+    <!-- more robust way to link css/js files-->
+    <!-- style sheet taken from bootstrap-->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+    <!-- adds ajax functionality -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script> 
+    <!-- scripts taken from bootstrap -->
+    
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
+    <!-- the code below allows us to change the document title for each template using the base -->
+    {% block head %} {% endblock %}
+</head>
+
+<body>
+    <!-- Nav Bar taken from bootstrap-->
+    <nav class="navbar navbar-dark bg-dark">
+        <!-- if you click top button, takes us to root directory -->
+        <a class="navbar-brand" href="/">Did You Even Read the Article?</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample01"
+            aria-controls="navbarsExample01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarsExample01">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/posts">Posts</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">About</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <!-- Dropdown menu-->
+                    <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">Contact Me</a>
+                    <div class="dropdown-menu" aria-labelledby="dropdown01">
+                        <a class="dropdown-item" href="https://www.google.com">Website</a>
+                        <a class="dropdown-item" href="#">YouTube</a>
+                        <a class="dropdown-item" href="#">Facebook</a>
+                        <a class="dropdown-item" href="#">Instagram</a>
+                    </div>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-md-0">
+                <input class="form-control" type="text" placeholder="Search" aria-label="Search">
+            </form>
+        </div>
+    </nav>
+    
+    <div class="container">
+        {% block body %} {% endblock %}
+    </div>
+    
+    
+
+    
+</body>
+
+</html>
