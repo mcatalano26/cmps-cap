@@ -225,14 +225,22 @@ features = ['WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_u
 our_model = random_forest_class_func(comments_df, features, 'action', 0.1, 1000)
 
 #To demonstrate the backend, we will hardcode a comment and article
-bad_comment = 'bad'
-good_comment = 'In a statement to NBC News, the Office of tje Director of National Intelligence said it will not interface with the Biden transition until the General Services Administration decides its clear who won'
-reddit_url = 'https://www.reddit.com/r/neutralnews/comments/jrts8z/biden_not_getting_intel_reports_because_trump/'
+# bad_comment = 'bad'
+# good_comment = 'In a statement to NBC News, the Office of tje Director of National Intelligence said it will not interface with the Biden transition until the General Services Administration decides its clear who won'
+# reddit_url = 'https://www.reddit.com/r/neutralnews/comments/jrts8z/biden_not_getting_intel_reports_because_trump/'
 
-comment = bad_comment
+# comment = bad_comment
+
+#user input:
+reddit_url = input("Copy and paste the reddit url that you wish to comment on: ")
+comment = input("Type your comment: ")
+
+print("Our model will now determine whether it appears that you have read the article or not...")
+print("\n\n\n")
+
 answer = big_func(comment, reddit_url, features, our_model)[0]
 
 if answer:
-    print('Good comment')
+    print('Good comment! Our model believes that you have read the article and are an informed commenter')
 else:
-    print('Bad comment')
+    print('Bad comment. Our model believes that you have not read the article and do not know what you are talking about')
