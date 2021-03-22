@@ -234,13 +234,21 @@ our_model = random_forest_class_func(comments_df, features, 'action', 0.1, 1000)
 #user input:
 reddit_url = input("Copy and paste the reddit url that you wish to comment on: ")
 comment = input("Type your comment: ")
+while(True):
+    print("Our model will now determine whether it appears that you have read the article or not...")
+    print("\n")
 
-print("Our model will now determine whether it appears that you have read the article or not...")
-print("\n\n\n")
+    answer = big_func(comment, reddit_url, features, our_model)[0]
 
-answer = big_func(comment, reddit_url, features, our_model)[0]
-
-if answer:
-    print('Good comment! Our model believes that you have read the article and are an informed commenter')
-else:
-    print('Bad comment. Our model believes that you have not read the article and do not know what you are talking about')
+    if answer:
+        print('Good comment! Our model believes that you have read the article and are an informed commenter\n')
+    else:
+        print('Bad comment. Our model believes that you have not read the article and do not know what you are talking about\n')
+    
+    yesorno = input("Would you like to enter another comment? [Y/N]")
+    
+    if yesorno == 'Y' or yesorno == 'y':
+        comment = input("Type your comment: ")
+    else:
+        print('Goodbye')
+        break
