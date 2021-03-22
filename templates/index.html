@@ -11,4 +11,28 @@
     <input type="submit">
 </form>
 
+<h2>What is this</h2>
+<p><strong>Did you even read the article</strong> is our senior capstone project for computer science. The goal is to encourage better discussion on online forums by sorting comments based on relevance based on several criteria, such as: 
+
+<ul>
+<li>Word choice</li>
+<li>Similarity of the article content to the comment</li>
+<li>Use of sources</li>
+</ul>
+
+By putting irrelevant and inflammatory comments at the bottom, people can look at positive and relevant discussion of news and current events. </p>
+
+<h2>How is it done</h2>
+<p>This project uses machine learning to identify good and bad comments. To create features for our algorithm, we used two natural language processing tools from the spacy library:
+
+<ul>
+<li><strong>Word vectors</strong>, a representation of words using a list of numbers. It is used in this case to determine the similarity between words</li>
+<li><strong>Named Entity Recognition</strong>, which identifies proper nouns and other distinguishing items in the comment and article. </li>
+</ul>
+
+Using these tools, we created several features to measure relevance between the article and comments. Our model has been trained to maximize the information we gather from these features to sort the comments.</p>
+
+<p> We collected our comments and articles from reddit.com, because it is a popular discussion forum with accessible data. Specifically, we got our labeled data from r/neutralnews and r/neutralpolitcs because they are well moderated subreddits with specific rules. We obtained a data archive of moderator removed comments from the moderators of neutral news, to be our "bad" comments. Using the reddit api, called praw, we scraped "good" comments and all the articles we needed
+
+
 {% endblock %}
