@@ -5,11 +5,14 @@
 {% endblock %}
 
 {% block body %}
+<br>
+
 <form action = '/showPost' method='post'>
-    <label for="reddit_link">Reddit Link: </label>
+    <label for="reddit_link"><strong>Reddit Link: </strong></label>
     <input type="text" name="reddit_link" id="reddit_link" size="100">
     <input type="submit">
 </form>
+
 
 <h2>What is this</h2>
 <p><strong>Did you even read the article</strong> is our senior capstone project for computer science. The goal is to encourage better discussion on online forums by sorting comments based on relevance based on several criteria, such as: 
