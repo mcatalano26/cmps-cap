@@ -34,8 +34,6 @@ from collections import Counter
 import en_core_web_lg
 nlp = en_core_web_lg.load()
 
-from spacy_wordnet.wordnet_annotator import WordnetAnnotator
-nlp.add_pipe(WordnetAnnotator(nlp.lang), after='tagger')
 
 import nltk
 nltk.download('wordnet')

@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, flash, url_for, sen
 import os
 import praw
 from dotenv import load_dotenv
+import app_backend as ab
 
 
 app = Flask(__name__)
@@ -31,16 +32,18 @@ def showPosts():
     submission.comments.replace_more(limit=0)
     for comment in submission.comments:
         comments.append(comment.body)   
-    return render_template('post.html', comments = comments, title = title, selftext = selftext)
+    return render_template('post.html', comments = comments, title = title, selftext = selftext, reddit_url = reddit_link)
 
 
 @app.route('/scoreComment', methods = ['POST'])
 def scoreComment():
     # text of comment
     comment = request.form.get("comment")
-    print(comment)
-
-    return jsonify(comment = comment)
+    reddit_url = request.form.get("reddit_url")
+    
+    score = ab.judgeComment(comment, reddit_url)
+    print("made it")
+    return jsonify(score = score)
 
 
 if __name__ == "__main__":
