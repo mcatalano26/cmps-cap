@@ -2,12 +2,9 @@
 import pandas as pd
 import numpy as np
 
-from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelBinarizer
-
-from sklearn.dummy import DummyRegressor
 from sklearn.ensemble import RandomForestClassifier
+
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -22,11 +19,13 @@ REDDIT_USERNAME=os.getenv('REDDIT_USERNAME')
 REDDIT_PASSWORD=os.getenv('REDDIT_PASSWORD')
 
 import praw
-import pandas as pd
 import datetime as dt
 import random
 import re
 import string
+
+import pickle
+from compress_pickle import dump, load
 
 import spacy
 from spacy import displacy
@@ -51,28 +50,6 @@ config = Config()
 config.browser_user_agent = user_agent
 
 reddit = praw.Reddit(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, user_agent=APP_NAME, username=REDDIT_USERNAME, password=REDDIT_PASSWORD)
-
-print(reddit.user.me())
-
-
-def set_up_train_test_split(df, feature_list, target_name, test_size):
-    X = df[feature_list]
-    X = X.to_numpy()
-    y = df[target_name]
-    y = y.to_numpy()
-    rand_state = random.randint(0, 1000)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = test_size, random_state=rand_state)
-    return X_train, X_test, y_train, y_test
-
-#Random Forest Classifier
-def random_forest_class_func(df, feature_list, target_name, test_size, estimators):
-    #set up training and testing split
-    X_train, X_test, y_train, y_test = set_up_train_test_split(df, feature_list, target_name, test_size)
-    
-    #fit ridge classifier to x and y training set
-    clf = RandomForestClassifier(n_estimators = estimators).fit(X_train, y_train)
-    
-    return clf
 
 def clean_article(article_url):
     try:
@@ -222,14 +199,8 @@ def big_func(comment_text, reddit_url, features, model):
 comments_df = pd.read_csv('files/compiled_comments_3_14_2021.csv')
 features = ['WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
 # features = ['WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore', 'NER_count', 'NER_match', 'tfidf', 'adjWordScore']
-our_model = random_forest_class_func(comments_df, features, 'action', 0.1, 1000)
+our_model = load("compressed_model.pkl", compression="lzma", set_default_extension=False)
 
-#To demonstrate the backend, we will hardcode a comment and article
-# bad_comment = 'bad'
-# good_comment = 'In a statement to NBC News, the Office of tje Director of National Intelligence said it will not interface with the Biden transition until the General Services Administration decides its clear who won'
-# reddit_url = 'https://www.reddit.com/r/neutralnews/comments/jrts8z/biden_not_getting_intel_reports_because_trump/'
-
-# comment = bad_comment
 
 #user input:
 reddit_url = input("Copy and paste the reddit url that you wish to comment on: ")
