@@ -195,31 +195,14 @@ def big_func(comment_text, reddit_url, features, model):
 
 #Start of actual code
 
-
-comments_df = pd.read_csv('files/compiled_comments_3_14_2021.csv')
-features = ['WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
-# features = ['WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore', 'NER_count', 'NER_match', 'tfidf', 'adjWordScore']
-our_model = load("compressed_model.pkl", compression="lzma", set_default_extension=False)
-
-
-#user input:
-reddit_url = input("Copy and paste the reddit url that you wish to comment on: ")
-comment = input("Type your comment: ")
-while(True):
-    print("Our model will now determine whether it appears that you have read the article or not...")
-    print("\n")
+def judgeComment(comment, reddit_url):
+    features = ['WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
+    # features = ['WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore', 'NER_count', 'NER_match', 'tfidf', 'adjWordScore']
+    our_model = load("compressed_model.pkl", compression="lzma", set_default_extension=False)
 
     answer = big_func(comment, reddit_url, features, our_model)[0]
 
     if answer:
-        print('Good comment! Our model believes that you have read the article and are an informed commenter\n')
+        return 'Good comment! Our model believes that you have read the article and are an informed commenter\n'
     else:
-        print('Bad comment. Our model believes that you have not read the article and do not know what you are talking about\n')
-    
-    yesorno = input("Would you like to enter another comment? [Y/N]")
-    
-    if yesorno == 'Y' or yesorno == 'y':
-        comment = input("Type your comment: ")
-    else:
-        print('Goodbye')
-        break
+        return 'Bad comment. Our model believes that you have not read the article and do not know what you are talking about\n'
