@@ -4,6 +4,7 @@
 
 
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type=text/javascript>
@@ -15,7 +16,7 @@
     <!-- more robust way to link css/js files-->
     <!-- style sheet taken from bootstrap-->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+        integrity="sha384JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 
     <!-- adds ajax functionality -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script> 
@@ -29,9 +30,20 @@
         crossorigin="anonymous"></script>
     <!-- the code below allows us to change the document title for each template using the base -->
     {% block head %} {% endblock %}
+
+    <style>
+    body {
+	background: lightblue;
+    }
+    h2 {
+	color: darkgreen;
+    }
+    </style>
+
 </head>
 
 <body>
+
     <!-- Nav Bar taken from bootstrap-->
     <nav class="navbar navbar-dark bg-dark">
         <!-- if you click top button, takes us to root directory -->
@@ -68,10 +80,15 @@
                 <input class="form-control" type="text" placeholder="Search" aria-label="Search">
             </form>
         </div>
+
     </nav>
-    
+    <img src="tulaneshield.png" alt="tulane logo" style="float:left">
+    <img src="reddit.png" alt="reddit logo" style="float:right"> 
+
     <div class="container">
-        {% block body %} {% endblock %}
+        {% block body %} 
+   	    
+	{% endblock %}
     </div>
     
     
