@@ -34,5 +34,14 @@ def showPosts():
     return render_template('post.html', comments = comments, title = title, selftext = selftext)
 
 
+@app.route('/scoreComment', methods = ['POST'])
+def scoreComment():
+    # text of comment
+    comment = request.form.get("comment")
+    print(comment)
+
+    return jsonify(comment = comment)
+
+
 if __name__ == "__main__":
     app.run(debug=True)
