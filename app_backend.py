@@ -132,13 +132,90 @@ def remove_stopwords(text):
     return filtered_text
 
 def adjwordscore_feature(comment_text, art_doc):
-    return
+    art_doc = nlp(str(art_doc))
+    art_items = [x.text for x in art_doc.ents]
+    art_labels = [x.label_ for x in art_doc.ents]
+
+    art_tokens = []
+    for (item, count) in Counter(art_items).most_common(5):
+        token = nlp(item)[0]
+        art_tokens += [token]
+    comment_text = str(comment_text)
+    doc = nlp(str(comment_text).lower())
+
+    items = [x.text for x in doc.ents]
+    labels = [x.label_ for x in doc.ents]
+
+    score = 0
+
+    for (item, count) in Counter(items).most_common(5):
+        com_label = labels[items.index(item)]
+        token = nlp(item)
+
+        wordScores = []
+
+        for art_word in art_tokens:
+            art_label = art_labels[art_tokens.index(art_word)]
+
+            if art_label == com_label:
+                amt = adjustments[art_label]
+                wordScores += [art_word.similarity(token) - amt]
+            else:
+                wordScores += [art_word.similarity(token)]
+        
+        if len(wordScores) != 0:
+            score += sum(wordScores)/len(wordScores)
+        else:
+            score = 0
+
+    return score
 
 def ner_feature(comment_text, art_doc):
-    return
+    art_doc = nlp(str(art_doc))
+    art_items = [x.text for x in art_doc.ents]
+    art_tokens = []
+    for item in Counter(art_items):
+        token = nlp(item)[0]
+        art_tokens += [token]
+    comment_text = str(comment_text)
+    doc = nlp(str(comment_text).lower())
+    items = [x.text for x in doc.ents]
+
+    score = 0
+
+    for item in Counter(items):
+        token = nlp(item)
+        if str(token) in str(art_tokens):
+            score += 1
+    return len(items), score
+
+def tf(term, document):
+    document = str(document)
+    term = str(term)
+
+    term_arr = str.split(document)
+    term_dict = Counter(term_arr)
+    return term_dict[term] / len(term_arr)
+
+def tfidf(term, document, idf_df):
+    idf_val = idf_df[idf_df['term'] == str(term)]
+    new_idf_val = idf_df.at[idf_val.index[0], 'idf']
+    return tf(term, document) * new_idf_val
 
 def tfidf_feature(comment, article):
-    return
+    idf_df = pd.read_csv('files/tfidf_ss.csv')
+    #NaN was a duplicate here, so I just wanna get rid of this every time
+    idf_df = idf_df.drop_duplicates()
+    idf_df = idf_df.reset_index(drop=True)
+    
+    tfidf_current = 0
+    tfidf_sum = 0
+    comment = str(comment)
+    term_arr = str.split(comment)
+    for element in term_arr:
+        tfidf_current = tfidf(element, article, idf_df)
+        tfidf_sum += tfidf_current
+    return tfidf_sum
 
 #Send in comment text, reddit url, and feature list
 def big_func(comment_text, reddit_url, features, model):
@@ -150,13 +227,12 @@ def big_func(comment_text, reddit_url, features, model):
     feature_values['contains_url'] = contains_url_feature(comment_text)
     
     #Need to figure out how to do tfidf
-    #feature_values['tfidf'] = tfidf_feature(comment_text, cleaned_article_text)
+    feature_values['tfidf'] = tfidf_feature(comment_text, cleaned_article_text)
     
     feature_values['WordScore'] = wordscore_feature(comment_text, cleaned_article_text)
     feature_values['WholeScore'] = wholescore_feature(comment_text, cleaned_article_text)
     
-    #Need to include Gabe's adjusted word score feature here
-    #feature_values['adjWordScore'] = adjwordscore_feature(comment_text, cleaned_article_text)
+    feature_values['adjWordScore'] = adjwordscore_feature(comment_text, cleaned_article_text)
     
     no_url_comment_text = remove_urls(comment_text)
     no_url_article_text = remove_urls(cleaned_article_text)
@@ -176,8 +252,7 @@ def big_func(comment_text, reddit_url, features, model):
     feature_values['no_url_or_stops_WholeScore'] = wholescore_feature(comment_text, cleaned_article_text)
     feature_values['no_url_or_stops_WordScore'] = wordscore_feature(comment_text, cleaned_article_text)
     
-    #Need to include Sam's 2 new features, NER_count and NER_match
-    #feature_values['NER_count'], feature_values['NER_match'] = ner_feature(comment_text, cleaned_article_text)
+    feature_values['NER_count'], feature_values['NER_match'] = ner_feature(comment_text, cleaned_article_text)
     
     prelim_features = []
     for feature in features:
@@ -191,16 +266,39 @@ def big_func(comment_text, reddit_url, features, model):
     return prediction
 
 
-#Start of actual code
+#Use this function to judge user comments in the app
 
 def judgeComment(comment, reddit_url):
-    features = ['WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
+    goodString = 'Good comment! Our model believes that you have read the article and are an informed commenter\n'
+    badString = 'Bad comment. Our model believes that you have not read the article and do not know what you are talking about\n'
+    #Threshold functions first
+
+    #Threshold of comments that are too short or too long to be productive
+    wordCount = len(comment.split())
+    if wordCount < 4:
+        return 'Bad comment. The model believes that the comment is too short to be helpful'
+    if wordCount > 1000:
+        return 'Bad comment. The model believes that the comment is too long to be helpful'
+
+    #Threshold removing anything with profanity
+    swearwords_df = pd.read_csv('files/edited-swear-words.csv')
+    swearwords = swearwords_df.swear.tolist()
+
+    words_in_comment = comment.split()
+    for word in words_in_comment:
+        if word in swearwords:
+            return 'Bad comment. The model believes that there is profanity in this comment'
+
+
+    #Model work starts here
+
+    features = ['tfidf', 'adjWordScore', 'NER_count', 'NER_match', 'WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
     # features = ['WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore', 'NER_count', 'NER_match', 'tfidf', 'adjWordScore']
-    our_model = load("compressed_model.pkl", compression="lzma", set_default_extension=False)
+    our_model = load("latest_model.pkl", compression="lzma", set_default_extension=False)
 
     answer = big_func(comment, reddit_url, features, our_model)[0]
 
     if answer:
-        return 'Good comment! Our model believes that you have read the article and are an informed commenter\n'
+        return goodString
     else:
-        return 'Bad comment. Our model believes that you have not read the article and do not know what you are talking about\n'
+        return badString

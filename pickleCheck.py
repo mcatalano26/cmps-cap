@@ -25,7 +25,7 @@ def determine_accuracy(y_test, y_val):
 
 from sklearn.ensemble import RandomForestClassifier
 #Random Forest Classifier
-def random_forest_class_func(df, feature_list, target_name, test_size, estimators):
+def random_forest_class_func(df, feature_list, target_name, test_size, estimators, model_name):
     #set up training and testing split
     X_train, X_test, y_train, y_test = set_up_train_test_split(df, feature_list, target_name, test_size)
     
@@ -33,7 +33,7 @@ def random_forest_class_func(df, feature_list, target_name, test_size, estimator
     clf = RandomForestClassifier(n_estimators = estimators).fit(X_train, y_train)
     
     #pickle the model
-    fname1 = "compressed_model.pkl"
+    fname1 = model_name
     #dump(clf, fname1)
     dump(clf, fname1, compression="lzma", set_default_extension=False)
     
@@ -46,5 +46,5 @@ def random_forest_class_func(df, feature_list, target_name, test_size, estimator
     print('Percentage correct: ' + str(percentage) + '\n')
 
 
-features = ['WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
-random_forest_class_func(comments_df, features, 'action', 0.1, 1000)
+features = ['tfidf', 'adjWordScore', 'NER_count', 'NER_match', 'WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
+random_forest_class_func(comments_df, features, 'action', 0.1, 1000, 'latest_model.pkl')
