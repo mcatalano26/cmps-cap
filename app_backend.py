@@ -189,8 +189,33 @@ def ner_feature(comment_text, art_doc):
             score += 1
     return len(items), score
 
+def tf(term, document):
+    document = str(document)
+    term = str(term)
+
+    term_arr = str.split(document)
+    term_dict = Counter(term_arr)
+    return term_dict[term] / len(term_arr)
+
+def tfidf(term, document, idf_df):
+    idf_val = idf_df[idf_df['term'] == str(term)]
+    new_idf_val = idf_df.at[idf_val.index[0], 'idf']
+    return tf(term, document) * new_idf_val
+
 def tfidf_feature(comment, article):
-    return
+    idf_df = pd.read_csv('files/tfidf_ss.csv')
+    #NaN was a duplicate here, so I just wanna get rid of this every time
+    idf_df = idf_df.drop_duplicates()
+    idf_df = idf_df.reset_index(drop=True)
+    
+    tfidf_current = 0
+    tfidf_sum = 0
+    comment = str(comment)
+    term_arr = str.split(comment)
+    for element in term_arr:
+        tfidf_current = tfidf(element, article, idf_df)
+        tfidf_sum += tfidf_current
+    return tfidf_sum
 
 #Send in comment text, reddit url, and feature list
 def big_func(comment_text, reddit_url, features, model):
@@ -202,7 +227,7 @@ def big_func(comment_text, reddit_url, features, model):
     feature_values['contains_url'] = contains_url_feature(comment_text)
     
     #Need to figure out how to do tfidf
-    #feature_values['tfidf'] = tfidf_feature(comment_text, cleaned_article_text)
+    feature_values['tfidf'] = tfidf_feature(comment_text, cleaned_article_text)
     
     feature_values['WordScore'] = wordscore_feature(comment_text, cleaned_article_text)
     feature_values['WholeScore'] = wholescore_feature(comment_text, cleaned_article_text)
@@ -267,7 +292,7 @@ def judgeComment(comment, reddit_url):
 
     #Model work starts here
 
-    features = ['adjWordScore', 'NER_count', 'NER_match', 'WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
+    features = ['tfidf', 'adjWordScore', 'NER_count', 'NER_match', 'WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
     # features = ['WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore', 'NER_count', 'NER_match', 'tfidf', 'adjWordScore']
     our_model = load("latest_model.pkl", compression="lzma", set_default_extension=False)
 

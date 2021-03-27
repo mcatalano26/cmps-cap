@@ -46,5 +46,5 @@ def random_forest_class_func(df, feature_list, target_name, test_size, estimator
     print('Percentage correct: ' + str(percentage) + '\n')
 
 
-features = ['adjWordScore', 'NER_count', 'NER_match', 'WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
+features = ['tfidf', 'adjWordScore', 'NER_count', 'NER_match', 'WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
 random_forest_class_func(comments_df, features, 'action', 0.1, 1000, 'latest_model.pkl')
