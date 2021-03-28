@@ -193,6 +193,8 @@ def tf(term, document):
     document = str(document)
     term = str(term)
 
+    #instead of splitting up every time, split it initially
+    #once and then pass in the term array and term dict to the function
     term_arr = str.split(document)
     term_dict = Counter(term_arr)
     return term_dict[term] / len(term_arr)
@@ -212,6 +214,7 @@ def tfidf_feature(comment, article):
     tfidf_sum = 0
     comment = str(comment)
     term_arr = str.split(comment)
+    #could remove duplicate terms to speed up the following loop
     for element in term_arr:
         tfidf_current = tfidf(element, article, idf_df)
         tfidf_sum += tfidf_current
