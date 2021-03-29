@@ -58,6 +58,7 @@ def clean_article(article_url):
         art_doc = nlp(art_text.lower())
     except:
         print('The article could not be cleaned')
+        return 'ERROR'
     return art_doc
 
 
@@ -231,6 +232,8 @@ def big_func(comment_text, reddit_url, features, model):
     submission = reddit.submission(url = reddit_url)
     article_url = submission.url
     cleaned_article_text = clean_article(article_url)
+    if cleaned_article_text == 'ERROR':
+        return 'ERROR'
     
     feature_values['contains_url'] = contains_url_feature(comment_text)
     
@@ -281,6 +284,7 @@ def big_func(comment_text, reddit_url, features, model):
 def judgeComment(comment, reddit_url):
     goodString = 'Good comment! Our model believes that you have read the article and are an informed commenter\n'
     badString = 'Bad comment. Our model believes that you have not read the article and do not know what you are talking about\n'
+    errorString = 'We\'re sorry, but there was an error reading in the article associated with this reddit link'
     #Threshold functions first
 
     #Threshold of comments that are too short or too long to be productive
@@ -305,7 +309,11 @@ def judgeComment(comment, reddit_url):
     features = ['length', 'adjWordScore', 'NER_count', 'NER_match', 'WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
     our_model = load("latest_model.pkl", compression="lzma", set_default_extension=False)
 
+    answer = 'ERROR'
     answer = big_func(comment, reddit_url, features, our_model)[0]
+
+    if answer == 'ERROR':
+        return errorString
 
     if answer:
         return goodString
