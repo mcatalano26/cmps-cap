@@ -220,9 +220,14 @@ def tfidf_feature(comment, article):
         tfidf_sum += tfidf_current
     return tfidf_sum
 
+def length_feature(comment):
+    comment = str(comment)
+    length = len(comment)
+    return length
+
 #Send in comment text, reddit url, and feature list
 def big_func(comment_text, reddit_url, features, model):
-    feature_values = {'tfidf': 0, 'WordScore': 0, 'WholeScore': 0, 'contains_url': False, 'adjWordScore': 0, 'no_url_WordScore': 0, 'no_url_WholeScore': 0, 'WordScoreNoStop': 0, 'WholeScoreNoStop': 0, 'no_url_or_stops_WholeScore': 0, 'no_url_or_stops_WordScore': 0, 'NER_count': 0, 'NER_match': 0}
+    feature_values = {'length': 0, 'WordScore': 0, 'WholeScore': 0, 'contains_url': False, 'adjWordScore': 0, 'no_url_WordScore': 0, 'no_url_WholeScore': 0, 'WordScoreNoStop': 0, 'WholeScoreNoStop': 0, 'no_url_or_stops_WholeScore': 0, 'no_url_or_stops_WordScore': 0, 'NER_count': 0, 'NER_match': 0}
     submission = reddit.submission(url = reddit_url)
     article_url = submission.url
     cleaned_article_text = clean_article(article_url)
@@ -230,7 +235,9 @@ def big_func(comment_text, reddit_url, features, model):
     feature_values['contains_url'] = contains_url_feature(comment_text)
     
     #Need to figure out how to do tfidf
-    feature_values['tfidf'] = tfidf_feature(comment_text, cleaned_article_text)
+    # feature_values['tfidf'] = tfidf_feature(comment_text, cleaned_article_text)
+
+    feature_values['length'] = wordscore_feature(comment_text)
     
     feature_values['WordScore'] = wordscore_feature(comment_text, cleaned_article_text)
     feature_values['WholeScore'] = wholescore_feature(comment_text, cleaned_article_text)
@@ -295,8 +302,7 @@ def judgeComment(comment, reddit_url):
 
     #Model work starts here
 
-    features = ['tfidf', 'adjWordScore', 'NER_count', 'NER_match', 'WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
-    # features = ['WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore', 'NER_count', 'NER_match', 'tfidf', 'adjWordScore']
+    features = ['length', 'adjWordScore', 'NER_count', 'NER_match', 'WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
     our_model = load("latest_model.pkl", compression="lzma", set_default_extension=False)
 
     answer = big_func(comment, reddit_url, features, our_model)[0]
