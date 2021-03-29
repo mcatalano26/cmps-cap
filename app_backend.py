@@ -58,6 +58,7 @@ def clean_article(article_url):
         art_doc = nlp(art_text.lower())
     except:
         print('The article could not be cleaned')
+        return 'ERROR'
     return art_doc
 
 
@@ -132,6 +133,7 @@ def remove_stopwords(text):
     return filtered_text
 
 def adjwordscore_feature(comment_text, art_doc):
+    adjustments = {"PERSON":0.4, "NORP":0.25, "FAC": 0.35, "ORG": 0.075, "GPE": 0.2, "LOC": 0.15, "PRODUCT": 0, "EVENT": 0.2, "WORK_OF_ART": 0, "LAW": 0, "LANGUAGE": 0.2, "DATE": 0.4, "TIME": 0.6, "PERCENT": 0.8, "MONEY": 0.5, "QUANTITY": 0.5, "ORDINAL": 0.25, "CARDINAL": 0.2}
     art_doc = nlp(str(art_doc))
     art_items = [x.text for x in art_doc.ents]
     art_labels = [x.label_ for x in art_doc.ents]
@@ -220,17 +222,26 @@ def tfidf_feature(comment, article):
         tfidf_sum += tfidf_current
     return tfidf_sum
 
+def length_feature(comment):
+    comment = str(comment)
+    length = len(comment)
+    return length
+
 #Send in comment text, reddit url, and feature list
 def big_func(comment_text, reddit_url, features, model):
-    feature_values = {'tfidf': 0, 'WordScore': 0, 'WholeScore': 0, 'contains_url': False, 'adjWordScore': 0, 'no_url_WordScore': 0, 'no_url_WholeScore': 0, 'WordScoreNoStop': 0, 'WholeScoreNoStop': 0, 'no_url_or_stops_WholeScore': 0, 'no_url_or_stops_WordScore': 0, 'NER_count': 0, 'NER_match': 0}
+    feature_values = {'length': 0, 'WordScore': 0, 'WholeScore': 0, 'contains_url': False, 'adjWordScore': 0, 'no_url_WordScore': 0, 'no_url_WholeScore': 0, 'WordScoreNoStop': 0, 'WholeScoreNoStop': 0, 'no_url_or_stops_WholeScore': 0, 'no_url_or_stops_WordScore': 0, 'NER_count': 0, 'NER_match': 0}
     submission = reddit.submission(url = reddit_url)
     article_url = submission.url
     cleaned_article_text = clean_article(article_url)
+    if cleaned_article_text == 'ERROR':
+        return ['ERROR']
     
     feature_values['contains_url'] = contains_url_feature(comment_text)
     
     #Need to figure out how to do tfidf
-    feature_values['tfidf'] = tfidf_feature(comment_text, cleaned_article_text)
+    # feature_values['tfidf'] = tfidf_feature(comment_text, cleaned_article_text)
+
+    feature_values['length'] = length_feature(comment_text)
     
     feature_values['WordScore'] = wordscore_feature(comment_text, cleaned_article_text)
     feature_values['WholeScore'] = wholescore_feature(comment_text, cleaned_article_text)
@@ -274,6 +285,7 @@ def big_func(comment_text, reddit_url, features, model):
 def judgeComment(comment, reddit_url):
     goodString = 'Good comment! Our model believes that you have read the article and are an informed commenter\n'
     badString = 'Bad comment. Our model believes that you have not read the article and do not know what you are talking about\n'
+    errorString = 'We\'re sorry, but there was an error reading in the article associated with this reddit link'
     #Threshold functions first
 
     #Threshold of comments that are too short or too long to be productive
@@ -295,11 +307,14 @@ def judgeComment(comment, reddit_url):
 
     #Model work starts here
 
-    features = ['tfidf', 'adjWordScore', 'NER_count', 'NER_match', 'WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
-    # features = ['WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore', 'NER_count', 'NER_match', 'tfidf', 'adjWordScore']
+    features = ['length', 'adjWordScore', 'NER_count', 'NER_match', 'WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
     our_model = load("latest_model.pkl", compression="lzma", set_default_extension=False)
 
+    answer = 'ERROR'
     answer = big_func(comment, reddit_url, features, our_model)[0]
+
+    if answer == 'ERROR':
+        return errorString
 
     if answer:
         return goodString
