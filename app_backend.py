@@ -133,6 +133,7 @@ def remove_stopwords(text):
     return filtered_text
 
 def adjwordscore_feature(comment_text, art_doc):
+    adjustments = {"PERSON":0.4, "NORP":0.25, "FAC": 0.35, "ORG": 0.075, "GPE": 0.2, "LOC": 0.15, "PRODUCT": 0, "EVENT": 0.2, "WORK_OF_ART": 0, "LAW": 0, "LANGUAGE": 0.2, "DATE": 0.4, "TIME": 0.6, "PERCENT": 0.8, "MONEY": 0.5, "QUANTITY": 0.5, "ORDINAL": 0.25, "CARDINAL": 0.2}
     art_doc = nlp(str(art_doc))
     art_items = [x.text for x in art_doc.ents]
     art_labels = [x.label_ for x in art_doc.ents]
@@ -233,14 +234,14 @@ def big_func(comment_text, reddit_url, features, model):
     article_url = submission.url
     cleaned_article_text = clean_article(article_url)
     if cleaned_article_text == 'ERROR':
-        return 'ERROR'
+        return ['ERROR']
     
     feature_values['contains_url'] = contains_url_feature(comment_text)
     
     #Need to figure out how to do tfidf
     # feature_values['tfidf'] = tfidf_feature(comment_text, cleaned_article_text)
 
-    feature_values['length'] = wordscore_feature(comment_text)
+    feature_values['length'] = length_feature(comment_text)
     
     feature_values['WordScore'] = wordscore_feature(comment_text, cleaned_article_text)
     feature_values['WholeScore'] = wholescore_feature(comment_text, cleaned_article_text)
