@@ -17,6 +17,9 @@ REDDIT_PASSWORD=os.getenv('REDDIT_PASSWORD')
 reddit = praw.Reddit(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, user_agent=APP_NAME, username=REDDIT_USERNAME, password=REDDIT_PASSWORD)
 
 
+def commentScore(comment):
+    return comment.score
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -24,15 +27,29 @@ def index():
 # want this method to show this post and its comments
 @app.route('/showPost', methods = ['POST'])
 def showPosts():
+    goodComments = []
+    badComments = []
+
     reddit_link = request.form.get('reddit_link')
     submission = reddit.submission(url = reddit_link)
     title = submission.title
     selftext = submission.selftext
-    comments = []
+    #comments = []
     submission.comments.replace_more(limit=0)
+
+    # split into good/bad
+
+    # rank by upvotes
     for comment in submission.comments:
-        comments.append(comment.body)   
-    return render_template('post.html', comments = comments, title = title, selftext = selftext, reddit_url = reddit_link)
+        if (ab.judgeComment(comment, reddit_link)):
+            goodComments.append(comment)
+        else :
+            badComments.append(comment) 
+
+    goodComments.sort(reverse = True, key = commentScore)
+    badComments.sort(reverse = True, key = commentScore)
+
+    return render_template('post.html', goodComments = goodComments, badComments = badComments, title = title, selftext = selftext, reddit_url = reddit_link)
 
 
 @app.route('/scoreComment', methods = ['POST'])

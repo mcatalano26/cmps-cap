@@ -19,10 +19,19 @@
 </div>
  
 <p> {{selftext}} </p>
-<h2> Comments </h2>
+<h2> Good Comments </h2>
 <ol>
-    {% for comment in comments %}
-    <li> {{ comment }} </li>
+    {% for comment in goodComments %}
+    <li> {{ comment.body }} </li>
+    <br>
+    {% endfor %}
+</ol>
+<br>
+<br>
+<h2> Bad Comments </h2>
+<ol>
+    {% for comment in badComments %}
+    <li> {{ comment.body }} </li>
     <br>
     {% endfor %}
 </ol>
