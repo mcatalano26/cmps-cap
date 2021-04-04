@@ -41,7 +41,7 @@ def showPosts():
 
     # rank by upvotes
     for comment in submission.comments:
-        if (ab.judgeComment(comment, reddit_link)):
+        if (ab.judgeComment(comment, reddit_link)[0]):
             goodComments.append(comment)
         else :
             badComments.append(comment) 
@@ -58,7 +58,7 @@ def scoreComment():
     comment = request.form.get("comment")
     reddit_url = request.form.get("reddit_url")
     
-    score = ab.judgeComment(comment, reddit_url)
+    score = ab.judgeComment(comment, reddit_url)[1]
     print("made it")
     return jsonify(score = score)
 

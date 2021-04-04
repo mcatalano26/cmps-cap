@@ -281,7 +281,8 @@ def big_func(comment_text, reddit_url, features, model):
 
 
 #Use this function to judge user comments in the app
-
+#judgeComment will return an array. The first element in the array will be True/False. True is a good comment, False is a bad comment
+#Second element in the array will be a string to print out
 def judgeComment(comment, reddit_url):
     goodString = 'Good comment! Our model believes that you have read the article and are an informed commenter\n'
     badString = 'Bad comment. Our model believes that you have not read the article and do not know what you are talking about\n'
@@ -292,9 +293,9 @@ def judgeComment(comment, reddit_url):
     comment = comment.body
     wordCount = len(comment.split())
     if wordCount < 4:
-        return 'Bad comment. The model believes that the comment is too short to be helpful'
+        return [False, 'Bad comment. The model believes that the comment is too short to be helpful']
     if wordCount > 1000:
-        return 'Bad comment. The model believes that the comment is too long to be helpful'
+        return [False, 'Bad comment. The model believes that the comment is too long to be helpful']
 
     #Threshold removing anything with profanity
     swearwords_df = pd.read_csv('files/edited-swear-words.csv')
@@ -303,7 +304,7 @@ def judgeComment(comment, reddit_url):
     words_in_comment = comment.split()
     for word in words_in_comment:
         if word in swearwords:
-            return 'Bad comment. The model believes that there is profanity in this comment'
+            return [False, 'Bad comment. The model believes that there is profanity in this comment']
 
 
     #Model work starts here
@@ -315,9 +316,9 @@ def judgeComment(comment, reddit_url):
     answer = big_func(comment, reddit_url, features, our_model)[0]
 
     if answer == 'ERROR':
-        return errorString
+        return [False, errorString]
 
     if answer:
-        return goodString
+        return [True, goodString]
     else:
-        return badString
+        return [False, badString]
