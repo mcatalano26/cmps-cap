@@ -46,8 +46,6 @@ config.browser_user_agent = user_agent
 
 app = Flask(__name__)
 
-load_dotenv()
-
 CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET=os.getenv('CLIENT_SECRET')
 APP_NAME=os.getenv('APP_NAME')
