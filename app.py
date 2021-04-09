@@ -41,7 +41,7 @@ def showPosts():
 
     # rank by upvotes
     for comment in submission.comments:
-        if (ab.judgeComment(comment, reddit_link)[0]):
+        if (ab.judgeComment(comment.body, reddit_link)[0]):
             goodComments.append(comment)
         else :
             badComments.append(comment) 

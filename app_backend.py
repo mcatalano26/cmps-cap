@@ -290,7 +290,8 @@ def judgeComment(comment, reddit_url):
     #Threshold functions first
 
     #Threshold of comments that are too short or too long to be productive
-    comment = comment.body
+    #comment = comment.body
+    print(type(comment))
     wordCount = len(comment.split())
     if wordCount < 4:
         return [False, 'Bad comment. The model believes that the comment is too short to be helpful']

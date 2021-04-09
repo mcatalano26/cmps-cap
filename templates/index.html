@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block body %}
-<img src="images/tulaneshield.png" alt="Tulane Logo">
+<img src="{{url_for('static', filename = 'tulaneshield.png')}}" alt="Tulane Logo">
 <br>
 
 <form action = '/showPost' method='post'>
