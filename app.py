@@ -42,9 +42,9 @@ def showPosts():
     # rank by upvotes
     for comment in submission.comments:
         if (ab.judgeComment(comment.body, reddit_link)[0]):
-            comment.body = vc.visualize(comment.body)
-            comment.body = vc.good_comment(comment.body)
-            goodComments.append(comment)
+            ner = vc.visualize(comment.body)
+            #comment.body = vc.good_comment(comment.body)
+            goodComments.append([comment, ner])
         else :
             comment.body = vc.visualize(comment.body)
             comment.body = vc.bad_comment(comment.body)
