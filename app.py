@@ -3,7 +3,7 @@ import os
 import praw
 from dotenv import load_dotenv
 import app_backend as ab
-
+import visualize_comment as vc
 
 app = Flask(__name__)
 
@@ -42,12 +42,14 @@ def showPosts():
     # rank by upvotes
     for comment in submission.comments:
         if (ab.judgeComment(comment.body, reddit_link)[0]):
+            comment.body = vc.visualize(comment.body)
+            comment.body = vc.good_comment(comment.body)
             goodComments.append(comment)
         else :
+            comment.body = vc.visualize(comment.body)
+            comment.body = vc.bad_comment(comment.body)
             badComments.append(comment) 
-
-    goodComments.sort(reverse = True, key = commentScore)
-    badComments.sort(reverse = True, key = commentScore)
+   
 
     return render_template('post.html', goodComments = goodComments, badComments = badComments, title = title, selftext = selftext, reddit_url = reddit_link)
 

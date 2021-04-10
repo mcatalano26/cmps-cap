@@ -55,11 +55,11 @@ def clean_article(article_url):
         article.download()
         article.parse()
         art_text = article.text
-        art_doc = nlp(art_text.lower())
+        #art_doc = nlp(art_text.lower())
     except:
         print('The article could not be cleaned')
         return 'ERROR'
-    return art_doc
+    return art_text
 
 
 def contains_url_feature(comment):
