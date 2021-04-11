@@ -55,11 +55,11 @@ def clean_article(article_url):
         article.download()
         article.parse()
         art_text = article.text
-        #art_doc = nlp(art_text.lower())
+        art_doc = nlp(art_text.lower())
     except:
         print('The article could not be cleaned')
         return 'ERROR'
-    return art_text
+    return art_doc
 
 
 def contains_url_feature(comment):
@@ -228,11 +228,8 @@ def length_feature(comment):
     return length
 
 #Send in comment text, reddit url, and feature list
-def big_func(comment_text, reddit_url, features, model):
+def big_func(comment_text, reddit_url, features, model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text):
     feature_values = {'length': 0, 'WordScore': 0, 'WholeScore': 0, 'contains_url': False, 'adjWordScore': 0, 'no_url_WordScore': 0, 'no_url_WholeScore': 0, 'WordScoreNoStop': 0, 'WholeScoreNoStop': 0, 'no_url_or_stops_WholeScore': 0, 'no_url_or_stops_WordScore': 0, 'NER_count': 0, 'NER_match': 0}
-    submission = reddit.submission(url = reddit_url)
-    article_url = submission.url
-    cleaned_article_text = clean_article(article_url)
     if cleaned_article_text == 'ERROR':
         return ['ERROR']
     
@@ -249,24 +246,21 @@ def big_func(comment_text, reddit_url, features, model):
     feature_values['adjWordScore'] = adjwordscore_feature(comment_text, cleaned_article_text)
     
     no_url_comment_text = remove_urls(comment_text)
-    no_url_article_text = remove_urls(cleaned_article_text)
     
     feature_values['no_url_WordScore'] = wordscore_feature(no_url_comment_text, no_url_article_text)
     feature_values['no_url_WholeScore'] = wholescore_feature(no_url_comment_text, no_url_article_text)
     
     comment_text = remove_stopwords(comment_text)
-    cleaned_article_text = remove_stopwords(cleaned_article_text)
     
-    feature_values['WordScoreNoStop'] = wordscore_feature(comment_text, cleaned_article_text)
-    feature_values['WholeScoreNoStop'] = wholescore_feature(comment_text, cleaned_article_text)
+    feature_values['WordScoreNoStop'] = wordscore_feature(comment_text, no_stop_article_text)
+    feature_values['WholeScoreNoStop'] = wholescore_feature(comment_text, no_stop_article_text)
 
     comment_text = remove_urls(comment_text)
-    cleaned_article_text = remove_urls(cleaned_article_text)
     
-    feature_values['no_url_or_stops_WholeScore'] = wholescore_feature(comment_text, cleaned_article_text)
-    feature_values['no_url_or_stops_WordScore'] = wordscore_feature(comment_text, cleaned_article_text)
+    feature_values['no_url_or_stops_WholeScore'] = wholescore_feature(comment_text, no_stop_or_url_article_text)
+    feature_values['no_url_or_stops_WordScore'] = wordscore_feature(comment_text, no_stop_or_url_article_text)
     
-    feature_values['NER_count'], feature_values['NER_match'] = ner_feature(comment_text, cleaned_article_text)
+    feature_values['NER_count'], feature_values['NER_match'] = ner_feature(comment_text, no_stop_or_url_article_text)
     
     prelim_features = []
     for feature in features:
@@ -283,15 +277,14 @@ def big_func(comment_text, reddit_url, features, model):
 #Use this function to judge user comments in the app
 #judgeComment will return an array. The first element in the array will be True/False. True is a good comment, False is a bad comment
 #Second element in the array will be a string to print out
-def judgeComment(comment, reddit_url):
+def judgeComment(comment, reddit_url, swearwords, features, our_model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text):
     goodString = 'Good comment! Our model believes that you have read the article and are an informed commenter\n'
     badString = 'Bad comment. Our model believes that you have not read the article and do not know what you are talking about\n'
     errorString = 'We\'re sorry, but there was an error reading in the article associated with this reddit link'
     #Threshold functions first
 
     #Threshold of comments that are too short or too long to be productive
-    #comment = comment.body
-    print(type(comment))
+    comment = comment.body
     wordCount = len(comment.split())
     if wordCount < 4:
         return [False, 'Bad comment. The model believes that the comment is too short to be helpful']
@@ -299,9 +292,6 @@ def judgeComment(comment, reddit_url):
         return [False, 'Bad comment. The model believes that the comment is too long to be helpful']
 
     #Threshold removing anything with profanity
-    swearwords_df = pd.read_csv('files/edited-swear-words.csv')
-    swearwords = swearwords_df.swear.tolist()
-
     words_in_comment = comment.split()
     for word in words_in_comment:
         if word in swearwords:
@@ -309,12 +299,8 @@ def judgeComment(comment, reddit_url):
 
 
     #Model work starts here
-
-    features = ['length', 'adjWordScore', 'NER_count', 'NER_match', 'WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
-    our_model = load("latest_model.pkl", compression="lzma", set_default_extension=False)
-
     answer = 'ERROR'
-    answer = big_func(comment, reddit_url, features, our_model)[0]
+    answer = big_func(comment, reddit_url, features, our_model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text)[0]
 
     if answer == 'ERROR':
         return [False, errorString]

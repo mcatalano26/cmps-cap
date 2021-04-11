@@ -19,7 +19,9 @@
 </div>
  
 <p> {{selftext}} </p>
-<h2> Comments </h2><ul>    {% for comment in comments %} 
+<h2> Comments </h2>
+<ul>
+    {% for comment in comments %} 
     {% if comment[0] == '[Good]' %}
  	<li style="color:green">
     {% elif comment[0] == '[Bad]' %}
@@ -34,7 +36,10 @@
 	    {% else %}
 		{{word}}
 	    {% endif %}
-	{% endfor %}    </li>    <br>    {% endfor %}
+	{% endfor %}
+    </li>
+    <br>
+    {% endfor %}
 </ul>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script> 
