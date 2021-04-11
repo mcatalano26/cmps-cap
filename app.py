@@ -79,7 +79,7 @@ def showPosts():
     selftext = submission.selftext
     submission.comments.replace_more(limit=0)
 
-    submission = reddit.submission(url = reddit_url)
+    submission = reddit.submission(url = reddit_link)
     article_url = submission.url
     cleaned_article_text = ab.clean_article(article_url)
     no_url_article_text = ab.remove_urls(cleaned_article_text)
