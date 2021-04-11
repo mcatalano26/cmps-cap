@@ -4,6 +4,7 @@ import praw
 from dotenv import load_dotenv
 import app_backend as ab
 import visualize_comment as vc
+from markupsafe import Markup
 
 app = Flask(__name__)
 
@@ -27,8 +28,8 @@ def index():
 # want this method to show this post and its comments
 @app.route('/showPost', methods = ['POST'])
 def showPosts():
-    goodComments = []
-    badComments = []
+    comments = []
+    #badComments = []
 
     reddit_link = request.form.get('reddit_link')
     submission = reddit.submission(url = reddit_link)
@@ -42,16 +43,18 @@ def showPosts():
     # rank by upvotes
     for comment in submission.comments:
         if (ab.judgeComment(comment.body, reddit_link)[0]):
-            ner = vc.visualize(comment.body)
-            #comment.body = vc.good_comment(comment.body)
-            goodComments.append([comment, ner])
+            comment.body = vc.visualize(comment.body)
+            comment.body = vc.good_comment(comment.body)
+            #print(comment.body)
+            #print(comment.body.split())
+            comments.append(comment.body.split())
+            print(comment.body)
         else :
             comment.body = vc.visualize(comment.body)
             comment.body = vc.bad_comment(comment.body)
-            badComments.append(comment) 
-   
-
-    return render_template('post.html', goodComments = goodComments, badComments = badComments, title = title, selftext = selftext, reddit_url = reddit_link)
+            comments.append(comment.body.split()) 
+    
+    return render_template('post.html', comments = comments, title = title, selftext = selftext, reddit_url = reddit_link)
 
 
 @app.route('/scoreComment', methods = ['POST'])

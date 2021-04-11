@@ -17,9 +17,9 @@ def strong_ner(comment):
     doc = nlp(comment)
     items = [x.text for x in doc.ents]
     #change comment so matches HTML
-    #for item in items:
-    #    comment = comment.replace(" " + item + " ", " <b>" + item + "</b> ")
-    return items
+    for item in items:
+        comment = comment.replace(" " + item + " ", " <b> " + item + " </b> ")
+    return comment
 
 #fix urls so they can be used again
 def restore_url(comment):
@@ -30,12 +30,12 @@ def restore_url(comment):
     return comment
 
 def visualize(comment):
-    ner = strong_ner(comment)
-    #comment = restore_url(comment)
-    return ner
+    comment = strong_ner(comment)
+    comment = restore_url(comment)
+    return comment
 
 def good_comment(comment):
-    return ('<style="color:green">' + comment + "</style>")
+    return ('[Good] '+ comment)
 
 def bad_comment(comment):
-    return ('<style="color:red">' + comment + "</style>")
+    return ('[Bad] ' + comment)
