@@ -2,11 +2,17 @@
 
 const commentButton = document.getElementById('userCommentButton');
 const mainDiv = document.getElementById('main');
+const scoreHolder = document.createElement("P");
+const inProgress = document.createElement('P');
+mainDiv.appendChild(inProgress);
+mainDiv.appendChild(scoreHolder);
+
 
 
 var commentScore;
 
 commentButton.addEventListener("click", function() {
+    inProgress.innerHTML = "Model is thinking..."
     let comment = document.getElementById('userComment').value;
     console.log(comment);
     $.post('/scoreComment', 
@@ -15,9 +21,8 @@ commentButton.addEventListener("click", function() {
     function (data) {
         commentScore = data.score;
         console.log(data, commentScore);
-        const scoreHolder = document.createElement("P");
         scoreHolder.innerHTML = commentScore;
-        mainDiv.appendChild(scoreHolder);
+        inProgress.innerHTML = '';
         
     });
 

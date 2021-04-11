@@ -20,14 +20,27 @@
  
 <p> {{selftext}} </p>
 <h2> Comments </h2>
-<ol>
-    {% for comment in comments %}
-    <li> {{ comment.body }} </li>
+<ul>
+    {% for comment in comments %} 
+    {% if comment[0] == '[Good]' %}
+ 	<li style="color:green">
+    {% elif comment[0] == '[Bad]' %}
+	<li style="color:red">
+    {% endif %}
+	{% for word in comment %}
+
+	    {% if word == '<b>' %}
+		<b>
+	    {% elif word == '</b>' %}
+		</b>
+	    {% else %}
+		{{word}}
+	    {% endif %}
+	{% endfor %}
+    </li>
     <br>
     {% endfor %}
-</ol>
-<br>
-<br>
+</ul>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script> 
 <script src="{{ url_for('static', filename='app.js') }}"></script>

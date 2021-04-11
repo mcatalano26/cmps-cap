@@ -8,6 +8,8 @@ import app_backend as ab
 #imports
 import pandas as pd
 import numpy as np
+import visualize_comment as vc
+from markupsafe import Markup
 
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
@@ -86,11 +88,18 @@ def showPosts():
 
     # rank by upvotes
     for comment in submission.comments:
-        ab.judgeComment(comment, reddit_link, swearwords, features, our_model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text)[0]
-        comments.append(comment)
-
-    comments.sort(reverse=True, key=commentScore)
-
+        if (ab.judgeComment(comment, reddit_link, swearwords, features, our_model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text)[0]):
+            comment.body = vc.visualize(comment.body)
+            comment.body = vc.good_comment(comment.body)
+            #print(comment.body)
+            #print(comment.body.split())
+            comments.append(comment.body.split())
+            print(comment.body)
+        else :
+            comment.body = vc.visualize(comment.body)
+            comment.body = vc.bad_comment(comment.body)
+            comments.append(comment.body.split()) 
+   
     return render_template('post.html', comments = comments, title = title, selftext = selftext, reddit_url = reddit_link)
 
 

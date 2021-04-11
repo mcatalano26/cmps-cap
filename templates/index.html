@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block body %}
-<img src="images/tulaneshield.png" alt="Tulane Logo">
+<img src="{{url_for('static', filename = 'tulaneshield.png')}}" alt="Tulane Logo" style="width:auto; height:100px">
 <br>
 
 <form action = '/showPost' method='post'>
@@ -16,7 +16,7 @@
 
 
 <h2>What is this?</h2>
-<p><strong>Did you even read the article</strong> is our senior capstone project for computer science. The goal is to encourage better discussion on online forums by sorting comments based on relevance based on several criteria, such as: 
+<p><strong>Did You Even Read the Article</strong> is our senior capstone project for computer science. The goal is to encourage better discussion on online forums by sorting comments based on relevance based on several criteria, such as: 
 
 <ul>
 <li>Word choice</li>
@@ -26,7 +26,7 @@
 
 By putting irrelevant and inflammatory comments at the bottom, people can look at positive and relevant discussion of news and current events. </p>
 
-<h2>How it is done</h2>
+<h2>How is it done?</h2>
 <p>This project uses machine learning to identify good and bad comments. To create features for our algorithm, we used two natural language processing tools from the spacy library:
 
 <ul>
