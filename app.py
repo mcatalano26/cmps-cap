@@ -78,7 +78,7 @@ def showPosts():
     title = submission.title
     selftext = submission.selftext
     submission.comments.replace_more(limit=0)
-    
+
     article_url = submission.url
     cleaned_article_text = ab.clean_article(article_url)
     no_url_article_text = ab.remove_urls(cleaned_article_text)
@@ -106,7 +106,17 @@ def showPosts():
 def scoreComment():
     # text of comment
     comment = request.form.get("comment")
-    reddit_url = request.form.get("reddit_url")
+    reddit_link = request.form.get('reddit_link')
+    submission = reddit.submission(url = reddit_link)
+    title = submission.title
+    selftext = submission.selftext
+    submission.comments.replace_more(limit=0)
+    
+    article_url = submission.url
+    cleaned_article_text = ab.clean_article(article_url)
+    no_url_article_text = ab.remove_urls(cleaned_article_text)
+    no_stop_article_text = ab.remove_stopwords(cleaned_article_text)
+    no_stop_or_url_article_text = ab.remove_urls(no_stop_article_text)
     
     score = ab.judgeComment(comment, reddit_url, swearwords, features, our_model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text)[1]
     print("made it")
