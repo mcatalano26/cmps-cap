@@ -55,11 +55,6 @@ REDDIT_USERNAME=os.getenv('REDDIT_USERNAME')
 REDDIT_PASSWORD=os.getenv('REDDIT_PASSWORD')
 reddit = praw.Reddit(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, user_agent=APP_NAME, username=REDDIT_USERNAME, password=REDDIT_PASSWORD)
 
-swearwords_df = pd.read_csv('files/edited-swear-words.csv')
-swearwords = swearwords_df.swear.tolist()
-features = ['length', 'adjWordScore', 'NER_count', 'NER_match', 'WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
-our_model = load("latest_model.pkl", compression="lzma", set_default_extension=False)
-
 
 def commentScore(comment):
     return comment.score
@@ -78,6 +73,11 @@ def showPosts():
     title = submission.title
     selftext = submission.selftext
     submission.comments.replace_more(limit=0)
+
+    swearwords_df = pd.read_csv('files/edited-swear-words.csv')
+    swearwords = swearwords_df.swear.tolist()
+    features = ['length', 'adjWordScore', 'NER_count', 'NER_match', 'WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
+    our_model = load("latest_model.pkl", compression="lzma", set_default_extension=False)
     
     article_url = submission.url
     cleaned_article_text = ab.clean_article(article_url)
@@ -111,6 +111,12 @@ def scoreComment():
     no_url_article_text = request.form.get('no_url_article_text')
     no_stop_article_text = request.form.get('no_stop_article_text')
     no_stop_or_url_article_text = request.form.get('no_stop_or_url_article_text')
+
+    #To increase speed, we probably shouldn't do this everytime, but it also only takes about
+    swearwords_df = pd.read_csv('files/edited-swear-words.csv')
+    swearwords = swearwords_df.swear.tolist()
+    features = ['length', 'adjWordScore', 'NER_count', 'NER_match', 'WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
+    our_model = load("latest_model.pkl", compression="lzma", set_default_extension=False)
 
     score = ab.judgeComment(comment, reddit_url, swearwords, features, our_model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text)[1]
     print("made it")
