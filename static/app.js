@@ -24,7 +24,6 @@ commentButton.addEventListener("click", function() {
     no_stop_or_url_article_text : no_stop_or_url_article_text},
     function (data) {
         commentScore = data.score;
-        console.log(data, commentScore);
         scoreHolder.innerHTML = commentScore;
         inProgress.innerHTML = '';
         

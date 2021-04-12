@@ -95,11 +95,13 @@ def showPosts():
             #print(comment.body)
             #print(comment.body.split())
             comments.append(comment.body.split())
-            print(comment.body)
         else :
             comment.body = vc.visualize(comment.body)
             comment.body = vc.bad_comment(comment.body)
-            comments.append(comment.body.split()) 
+            comments.append(comment.body.split())
+
+    #The below code doesn't work because we are just appending the body of a comment to comments list, not a comments object...this needs to be fixed
+    # comments.sort(reverse = True, key = commentScore)
    
     return render_template('post.html', comments = comments, title = title, selftext = selftext, reddit_url = reddit_link, cleaned_article_text=cleaned_article_text, no_url_article_text=no_url_article_text, no_stop_article_text=no_stop_article_text, no_stop_or_url_article_text=no_stop_or_url_article_text)
 
