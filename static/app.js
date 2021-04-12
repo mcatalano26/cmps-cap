@@ -17,7 +17,11 @@ commentButton.addEventListener("click", function() {
     console.log(comment);
     $.post('/scoreComment', 
     {comment : comment,
-    reddit_url : reddit_link},
+    reddit_url : reddit_link,
+    cleaned_article_text : cleaned_article_text,
+    no_url_article_text : no_url_article_text,
+    no_stop_article_text : no_stop_article_text,
+    no_stop_or_url_article_text : no_stop_or_url_article_text},
     function (data) {
         commentScore = data.score;
         console.log(data, commentScore);

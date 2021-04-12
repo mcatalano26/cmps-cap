@@ -99,15 +99,19 @@ def showPosts():
             comment.body = vc.bad_comment(comment.body)
             comments.append(comment.body.split()) 
    
-    return render_template('post.html', comments = comments, title = title, selftext = selftext, reddit_url = reddit_link)
+    return render_template('post.html', comments = comments, title = title, selftext = selftext, reddit_url = reddit_link, cleaned_article_text=cleaned_article_text, no_url_article_text=no_url_article_text, no_stop_article_text=no_stop_article_text, no_stop_or_url_article_text=no_stop_or_url_article_text)
 
 
 @app.route('/scoreComment', methods = ['POST'])
 def scoreComment():
     # text of comment
     comment = request.form.get("comment")
-    reddit_url = request.form.get("reddit_url")
-    
+    reddit_url = request.form.get('reddit_link')
+    cleaned_article_text = request.form.get('cleaned_article_text')
+    no_url_article_text = request.form.get('no_url_article_text')
+    no_stop_article_text = request.form.get('no_stop_article_text')
+    no_stop_or_url_article_text = request.form.get('no_stop_or_url_article_text')
+
     score = ab.judgeComment(comment, reddit_url, swearwords, features, our_model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text)[1]
     print("made it")
     return jsonify(score = score)
