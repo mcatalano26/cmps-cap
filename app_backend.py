@@ -298,6 +298,7 @@ def judgeComment(comment, reddit_url, swearwords, features, our_model, cleaned_a
         for letter in word:
             if letter in punctuation_lst:
                 word = word.replace(letter, "")
+        word = word.lower()
         if word in swearwords:
             return [False, 'Bad comment. The model believes that there is profanity in this comment']
 

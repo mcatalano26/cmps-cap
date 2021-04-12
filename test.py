@@ -19,3 +19,8 @@ if boo:
     print('swear word is detected in stringy')
 else:
     print('no swear word found')
+
+stringy = 'THIS IS A caps STRING'
+
+stringy = stringy.lower()
+print(stringy)
