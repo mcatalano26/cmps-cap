@@ -277,7 +277,7 @@ def big_func(comment_text, reddit_url, features, model, cleaned_article_text, no
 #Use this function to judge user comments in the app
 #judgeComment will return an array. The first element in the array will be True/False. True is a good comment, False is a bad comment
 #Second element in the array will be a string to print out
-def judgeComment(comment, reddit_url, swearwords, features, our_model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text):
+def judgeComment(comment, reddit_url, swearwords, features, our_model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text, punctuation_lst):
     goodString = 'Good comment! Our model believes that you have read the article and are an informed commenter\n'
     badString = 'Bad comment. Our model believes that you have not read the article and do not know what you are talking about\n'
     errorString = 'We\'re sorry, but there was an error reading in the article associated with this reddit link'
@@ -295,6 +295,9 @@ def judgeComment(comment, reddit_url, swearwords, features, our_model, cleaned_a
     #Threshold removing anything with profanity
     words_in_comment = comment.split()
     for word in words_in_comment:
+        for letter in word:
+            if letter in punctuation_lst:
+                word = word.replace(letter, "")
         if word in swearwords:
             return [False, 'Bad comment. The model believes that there is profanity in this comment']
 
