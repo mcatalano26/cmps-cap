@@ -34,8 +34,8 @@ def visualize(comment):
     comment = restore_url(comment)
     return comment
 
-def good_comment(comment):
-    return ('[Good] '+ comment)
+def good_comment(comment, confidence):
+    return ('[Good - ' + confidence + ']\n\n\n' + comment)
 
-def bad_comment(comment):
-    return ('[Bad] ' + comment)
+def bad_comment(comment, confidence):
+    return ('[Bad - ' + confidence + ']\n\n\n' + comment)

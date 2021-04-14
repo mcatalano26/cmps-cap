@@ -89,15 +89,17 @@ def showPosts():
 
     # rank by upvotes
     for comment in submission.comments:
-        if (ab.judgeComment(comment, reddit_link, swearwords, features, our_model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text, punctuation_lst)[0]):
+        is_good_comment = ab.judgeComment(comment, reddit_link, swearwords, features, our_model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text, punctuation_lst)
+        confidence = is_good_comment[2]
+        if (is_good_comment[0]):
             comment.body = vc.visualize(comment.body)
-            comment.body = vc.good_comment(comment.body)
+            comment.body = vc.good_comment(comment.body, confidence)
             #print(comment.body)
             #print(comment.body.split())
             comments.append(comment.body.split())
         else :
             comment.body = vc.visualize(comment.body)
-            comment.body = vc.bad_comment(comment.body)
+            comment.body = vc.bad_comment(comment.body, confidence)
             comments.append(comment.body.split())
 
     #The below code doesn't work because we are just appending the body of a comment to comments list, not a comments object...this needs to be fixed
@@ -123,8 +125,10 @@ def scoreComment():
     our_model = load("latest_model.pkl", compression="lzma", set_default_extension=False)
     punctuation_lst = [',', '.', '!', '?', '<', '>', '/', ':', ';', '\'', '\"', '[', '{', ']', '}', '|', '\\', '`', '~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+']
 
-
-    score = ab.judgeComment(comment, reddit_url, swearwords, features, our_model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text, punctuation_lst)[1]
+    #full_score[1] has the original statement we printed out, full_score[2] holds a string that says how confident the model is
+    #Need to fix this so that the confidence is printed as well on a new comment
+    full_score = ab.judgeComment(comment, reddit_url, swearwords, features, our_model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text, punctuation_lst)[1]
+    score = full_score[1]
     print("made it")
     return jsonify(score = score)
 

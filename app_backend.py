@@ -270,8 +270,10 @@ def big_func(comment_text, reddit_url, features, model, cleaned_article_text, no
     prelim_features = np.array(prelim_features)
     
     prediction = model.predict(prelim_features)
+
+    prob_prediction = model.predict_proba(prelim_features)
     
-    return prediction
+    return prediction, prob_prediction
 
 
 #Use this function to judge user comments in the app
@@ -281,6 +283,7 @@ def judgeComment(comment, reddit_url, swearwords, features, our_model, cleaned_a
     goodString = 'Good comment! Our model believes that you have read the article and are an informed commenter\n'
     badString = 'Bad comment. Our model believes that you have not read the article and do not know what you are talking about\n'
     errorString = 'We\'re sorry, but there was an error reading in the article associated with this reddit link'
+    threshold = 'threshold'
     #Threshold functions first
 
     #Threshold of comments that are too short or too long to be productive
@@ -288,9 +291,9 @@ def judgeComment(comment, reddit_url, swearwords, features, our_model, cleaned_a
         comment = comment.body
     wordCount = len(comment.split())
     if wordCount < 4:
-        return [False, 'Bad comment. The model believes that the comment is too short to be helpful']
+        return [False, 'Bad comment. The model believes that the comment is too short to be helpful', 'too short']
     if wordCount > 1000:
-        return [False, 'Bad comment. The model believes that the comment is too long to be helpful']
+        return [False, 'Bad comment. The model believes that the comment is too long to be helpful', 'too long']
 
     #Threshold removing anything with profanity
     words_in_comment = comment.split()
@@ -300,17 +303,24 @@ def judgeComment(comment, reddit_url, swearwords, features, our_model, cleaned_a
                 word = word.replace(letter, "")
         word = word.lower()
         if word in swearwords:
-            return [False, 'Bad comment. The model believes that there is profanity in this comment']
+            return [False, 'Bad comment. The model believes that there is profanity in this comment', 'profanity']
 
 
     #Model work starts here
     answer = 'ERROR'
-    answer = big_func(comment, reddit_url, features, our_model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text)[0]
+    prediction, proba = big_func(comment, reddit_url, features, our_model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text)
 
+    answer = prediction[0]
     if answer == 'ERROR':
-        return [False, errorString]
+        return [False, errorString, 'ERROR']
 
     if answer:
-        return [True, goodString]
+        perc = proba[0][1] * 100
+        perc = round(perc, 3)
+        proba_str = str(perc) + chr(37) + " confident"
+        return [True, goodString, proba_str]
     else:
-        return [False, badString]
+        perc = proba[0][0] * 100
+        perc = round(perc, 3)
+        proba_str = str(perc) + chr(37) + " confident"
+        return [False, badString, proba_str]

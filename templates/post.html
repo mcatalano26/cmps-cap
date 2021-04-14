@@ -26,10 +26,10 @@
 <h2> Comments </h2>
 <ul>
     {% for comment in comments %} 
-    {% if comment[0] == '[Good]' %}
+    {% if comment[0] == '[Good' %}
  	<li style="color:green">
-    {% elif comment[0] == '[Bad]' %}
-	<li style="color:red">
+    {% elif comment[0] == '[Bad' %}
+	<li style="color:darkred">
     {% endif %}
 	{% for word in comment %}
 
