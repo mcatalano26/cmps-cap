@@ -108,7 +108,7 @@ def showPosts():
     #The below code doesn't work because we are just appending the body of a comment to comments list, not a comments object...this needs to be fixed
     # comments.sort(reverse = True, key = commentScore)
    
-    return render_template('post.html', comments = comments, title = title, selftext = selftext, reddit_url = reddit_link, cleaned_article_text=cleaned_article_text, no_url_article_text=no_url_article_text, no_stop_article_text=no_stop_article_text, no_stop_or_url_article_text=no_stop_or_url_article_text)
+    return render_template('post.html', comments = comments, title = title, selftext = selftext, reddit_url = reddit_link, cleaned_article_text=cleaned_article_text, no_url_article_text=no_url_article_text, no_stop_article_text=no_stop_article_text, no_stop_or_url_article_text=no_stop_or_url_article_text, exp=None)
 
 
 @app.route('/scoreComment', methods = ['POST'])
@@ -132,7 +132,9 @@ def scoreComment():
     new_X_train = np.loadtxt('files/X_train.csv', delimiter = ',')
 
     full_score = ab.judgeComment(comment, reddit_url, swearwords, features, our_model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text, punctuation_lst)
-    
+    print('This is full_score[3][0]: \n')
+    print(full_score[3][0])
+
     explainer = lime_tabular.LimeTabularExplainer(
         training_data=np.array(new_X_train),
         feature_names=features,
@@ -141,14 +143,15 @@ def scoreComment():
     )
 
     exp = explainer.explain_instance(
-        data_row=full_score[3], 
+        data_row=full_score[3][0], 
         predict_fn=our_model.predict_proba
     )
     
     score = exp.as_html()
     print("made it")
-    # Previously, score was full_score[1] + full_score[2]...just a string
     return jsonify(score = score)
+    # Previously, score was full_score[1] + full_score[2]...just a string
+    # return jsonify(score = score)
 
 
 if __name__ == "__main__":
