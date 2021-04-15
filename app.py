@@ -127,8 +127,8 @@ def scoreComment():
 
     #full_score[1] has the original statement we printed out, full_score[2] holds a string that says how confident the model is
     #Need to fix this so that the confidence is printed as well on a new comment
-    full_score = ab.judgeComment(comment, reddit_url, swearwords, features, our_model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text, punctuation_lst)[1]
-    score = full_score[1]
+    full_score = ab.judgeComment(comment, reddit_url, swearwords, features, our_model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text, punctuation_lst)
+    score = str(full_score[1]) + ' - ' + str(full_score[2])
     print("made it")
     return jsonify(score = score)
 
