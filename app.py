@@ -6,6 +6,9 @@ load_dotenv()
 import app_backend as ab
 
 #imports
+import lime
+from lime import lime_tabular
+
 import pandas as pd
 import numpy as np
 import visualize_comment as vc
@@ -125,11 +128,26 @@ def scoreComment():
     our_model = load("latest_model.pkl", compression="lzma", set_default_extension=False)
     punctuation_lst = [',', '.', '!', '?', '<', '>', '/', ':', ';', '\'', '\"', '[', '{', ']', '}', '|', '\\', '`', '~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+']
 
-    #full_score[1] has the original statement we printed out, full_score[2] holds a string that says how confident the model is
-    #Need to fix this so that the confidence is printed as well on a new comment
+    #Lime stuff to add...probably should make this better so it isn't run every time
+    new_X_train = np.loadtxt('files/X_train.csv', delimiter = ',')
+
     full_score = ab.judgeComment(comment, reddit_url, swearwords, features, our_model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text, punctuation_lst)
-    score = str(full_score[1]) + ' - ' + str(full_score[2])
+    
+    explainer = lime_tabular.LimeTabularExplainer(
+        training_data=np.array(new_X_train),
+        feature_names=features,
+        class_names=[False, True],
+        mode='classification'
+    )
+
+    exp = explainer.explain_instance(
+        data_row=full_score[3], 
+        predict_fn=our_model.predict_proba
+    )
+    
+    score = exp.as_html()
     print("made it")
+    # Previously, score was full_score[1] + full_score[2]...just a string
     return jsonify(score = score)
 
 
