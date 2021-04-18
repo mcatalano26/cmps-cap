@@ -321,14 +321,14 @@ def judgeComment(comment, reddit_url, swearwords, features, our_model, cleaned_a
         return [False, 'Bad comment. The model believes that the comment is too long to be helpful', 'too long', feature_values]
 
     # Threshold removing anything with profanity
-    words_in_comment = comment.split()
-    for word in words_in_comment:
-        for letter in word:
-            if letter in punctuation_lst:
-                word = word.replace(letter, "")
-        word = word.lower()
-        if word in swearwords:
-            return [False, 'Bad comment. The model believes that there is profanity in this comment', 'profanity', feature_values]
+    # words_in_comment = comment.split()
+    # for word in words_in_comment:
+    #     for letter in word:
+    #         if letter in punctuation_lst:
+    #             word = word.replace(letter, "")
+    #     word = word.lower()
+    #     if word in swearwords:
+    #         return [False, 'Bad comment. The model believes that there is profanity in this comment', 'profanity', feature_values]
 
     answer = prediction[0]
     if answer == 'ERROR':
