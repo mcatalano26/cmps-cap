@@ -2,6 +2,9 @@
 import pandas as pd
 import numpy as np
 
+import lime
+from lime import lime_tabular
+
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 
@@ -227,9 +230,22 @@ def length_feature(comment):
     length = len(comment)
     return length
 
+def profanity_feature(comment, punctuation_lst, swearwords):
+    comment = str(comment)
+    words_in_comment = comment.split()
+    for word in words_in_comment:
+        for letter in word:
+            if letter in punctuation_lst:
+                word = word.replace(letter, "")
+        word = word.lower()
+        if word in swearwords:
+            return True
+    return False
+
+
 #Send in comment text, reddit url, and feature list
-def big_func(comment_text, reddit_url, features, model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text):
-    feature_values = {'length': 0, 'WordScore': 0, 'WholeScore': 0, 'contains_url': False, 'adjWordScore': 0, 'no_url_WordScore': 0, 'no_url_WholeScore': 0, 'WordScoreNoStop': 0, 'WholeScoreNoStop': 0, 'no_url_or_stops_WholeScore': 0, 'no_url_or_stops_WordScore': 0, 'NER_count': 0, 'NER_match': 0}
+def big_func(comment_text, reddit_url, features, model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text, swearwords, punctuation_lst):
+    feature_values = {'profanity': False, 'length': 0, 'WordScore': 0, 'WholeScore': 0, 'contains_url': False, 'adjWordScore': 0, 'no_url_WordScore': 0, 'no_url_WholeScore': 0, 'WordScoreNoStop': 0, 'WholeScoreNoStop': 0, 'no_url_or_stops_WholeScore': 0, 'no_url_or_stops_WordScore': 0, 'NER_count': 0, 'NER_match': 0}
     if cleaned_article_text == 'ERROR':
         return ['ERROR']
     
@@ -237,6 +253,8 @@ def big_func(comment_text, reddit_url, features, model, cleaned_article_text, no
     
     #Need to figure out how to do tfidf
     # feature_values['tfidf'] = tfidf_feature(comment_text, cleaned_article_text)
+
+    feature_values['profanity'] = profanity_feature(comment_text, punctuation_lst, swearwords)
 
     feature_values['length'] = length_feature(comment_text)
     
@@ -269,11 +287,14 @@ def big_func(comment_text, reddit_url, features, model, cleaned_article_text, no
     prelim_features = [prelim_features]
     prelim_features = np.array(prelim_features)
     
+    #maybe add some code to avergae the probabilities of several predictions? predict_proba is not the same every time
+    #which means that if it is close to 50%, there could be a swing between a good and a bad comment if the article is run
+    #multiple times...probably not a real problem though
     prediction = model.predict(prelim_features)
 
     prob_prediction = model.predict_proba(prelim_features)
     
-    return prediction, prob_prediction
+    return prediction, prob_prediction, prelim_features
 
 
 #Use this function to judge user comments in the app
@@ -289,38 +310,38 @@ def judgeComment(comment, reddit_url, swearwords, features, our_model, cleaned_a
     #Threshold of comments that are too short or too long to be productive
     if ((isinstance(comment, str)) == False):
         comment = comment.body
-    wordCount = len(comment.split())
-    if wordCount < 4:
-        return [False, 'Bad comment. The model believes that the comment is too short to be helpful', 'too short']
-    if wordCount > 1000:
-        return [False, 'Bad comment. The model believes that the comment is too long to be helpful', 'too long']
-
-    #Threshold removing anything with profanity
-    words_in_comment = comment.split()
-    for word in words_in_comment:
-        for letter in word:
-            if letter in punctuation_lst:
-                word = word.replace(letter, "")
-        word = word.lower()
-        if word in swearwords:
-            return [False, 'Bad comment. The model believes that there is profanity in this comment', 'profanity']
-
 
     #Model work starts here
     answer = 'ERROR'
-    prediction, proba = big_func(comment, reddit_url, features, our_model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text)
+    prediction, proba, feature_values = big_func(comment, reddit_url, features, our_model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text, swearwords, punctuation_lst)
+
+    wordCount = len(comment.split())
+    if wordCount < 4:
+        return [False, 'Bad comment. The model believes that the comment is too short to be helpful', 'too short', feature_values]
+    if wordCount > 1000:
+        return [False, 'Bad comment. The model believes that the comment is too long to be helpful', 'too long', feature_values]
+
+    # Threshold removing anything with profanity
+    # words_in_comment = comment.split()
+    # for word in words_in_comment:
+    #     for letter in word:
+    #         if letter in punctuation_lst:
+    #             word = word.replace(letter, "")
+    #     word = word.lower()
+    #     if word in swearwords:
+    #         return [False, 'Bad comment. The model believes that there is profanity in this comment', 'profanity', feature_values]
 
     answer = prediction[0]
     if answer == 'ERROR':
-        return [False, errorString, 'ERROR']
+        return [False, errorString, 'ERROR', feature_values]
 
     if answer:
         perc = proba[0][1] * 100
         perc = round(perc, 3)
         proba_str = str(perc) + chr(37) + " confident"
-        return [True, goodString, proba_str]
+        return [True, goodString, proba_str, feature_values]
     else:
         perc = proba[0][0] * 100
         perc = round(perc, 3)
         proba_str = str(perc) + chr(37) + " confident"
-        return [False, badString, proba_str]
+        return [False, badString, proba_str, feature_values]
