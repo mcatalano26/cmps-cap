@@ -28,6 +28,9 @@ from sklearn.ensemble import RandomForestClassifier
 def random_forest_class_func(df, feature_list, target_name, test_size, estimators, model_name):
     #set up training and testing split
     X_train, X_test, y_train, y_test = set_up_train_test_split(df, feature_list, target_name, test_size)
+
+    #Send X_train to file for visualization later
+    np.savetxt('files/X_train.csv', X_train, delimiter = ',')
     
     #fit ridge classifier to x and y training set
     clf = RandomForestClassifier(n_estimators = estimators).fit(X_train, y_train)
@@ -46,5 +49,5 @@ def random_forest_class_func(df, feature_list, target_name, test_size, estimator
     print('Percentage correct: ' + str(percentage) + '\n')
 
 
-features = ['length', 'adjWordScore', 'NER_count', 'NER_match', 'WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
+features = ['profanity', 'length', 'adjWordScore', 'NER_count', 'NER_match', 'WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
 random_forest_class_func(comments_df, features, 'action', 0.1, 1000, 'latest_model.pkl')

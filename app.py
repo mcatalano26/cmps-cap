@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, flash, url_for, send_from_directory, jsonify
+from flask import Flask, render_template, request, redirect, flash, url_for, send_from_directory, jsonify, Markup, flash
 import os
 import praw
 from dotenv import load_dotenv
@@ -6,10 +6,12 @@ load_dotenv()
 import app_backend as ab
 
 #imports
+import lime
+from lime import lime_tabular
+
 import pandas as pd
 import numpy as np
 import visualize_comment as vc
-from markupsafe import Markup
 
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
@@ -76,7 +78,7 @@ def showPosts():
 
     swearwords_df = pd.read_csv('files/edited-swear-words.csv')
     swearwords = swearwords_df.swear.tolist()
-    features = ['length', 'adjWordScore', 'NER_count', 'NER_match', 'WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
+    features = ['profanity', 'length', 'adjWordScore', 'NER_count', 'NER_match', 'WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
     our_model = load("latest_model.pkl", compression="lzma", set_default_extension=False)
     punctuation_lst = [',', '.', '!', '?', '<', '>', '/', ':', ';', '\'', '\"', '[', '{', ']', '}', '|', '\\', '`', '~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+']
 
@@ -105,7 +107,7 @@ def showPosts():
     #The below code doesn't work because we are just appending the body of a comment to comments list, not a comments object...this needs to be fixed
     # comments.sort(reverse = True, key = commentScore)
    
-    return render_template('post.html', comments = comments, title = title, selftext = selftext, reddit_url = reddit_link, cleaned_article_text=cleaned_article_text, no_url_article_text=no_url_article_text, no_stop_article_text=no_stop_article_text, no_stop_or_url_article_text=no_stop_or_url_article_text)
+    return render_template('post.html', comments = comments, title = title, selftext = selftext, reddit_url = reddit_link, cleaned_article_text=cleaned_article_text, no_url_article_text=no_url_article_text, no_stop_article_text=no_stop_article_text, no_stop_or_url_article_text=no_stop_or_url_article_text, exp=None)
 
 
 @app.route('/scoreComment', methods = ['POST'])
@@ -121,16 +123,40 @@ def scoreComment():
     #To increase speed, we probably shouldn't do this everytime, but it also only takes about 5 seconds to run so it's not that big of a deal
     swearwords_df = pd.read_csv('files/edited-swear-words.csv')
     swearwords = swearwords_df.swear.tolist()
-    features = ['length', 'adjWordScore', 'NER_count', 'NER_match', 'WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
+    features = ['profanity', 'length', 'adjWordScore', 'NER_count', 'NER_match', 'WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
     our_model = load("latest_model.pkl", compression="lzma", set_default_extension=False)
     punctuation_lst = [',', '.', '!', '?', '<', '>', '/', ':', ';', '\'', '\"', '[', '{', ']', '}', '|', '\\', '`', '~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+']
 
-    #full_score[1] has the original statement we printed out, full_score[2] holds a string that says how confident the model is
-    #Need to fix this so that the confidence is printed as well on a new comment
-    full_score = ab.judgeComment(comment, reddit_url, swearwords, features, our_model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text, punctuation_lst)[1]
-    score = full_score[1]
+    #Lime stuff to add...probably should make this better so it isn't run every time
+    new_X_train = np.loadtxt('files/X_train.csv', delimiter = ',')
+
+    full_score = ab.judgeComment(comment, reddit_url, swearwords, features, our_model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text, punctuation_lst)
+    print('This is full_score[3][0]: \n')
+    print(full_score[3][0])
+
+    explainer = lime_tabular.LimeTabularExplainer(
+        training_data=np.array(new_X_train),
+        feature_names=features,
+        class_names=[False, True],
+        mode='classification'
+    )
+
+    exp = explainer.explain_instance(
+        data_row=full_score[3][0], 
+        predict_fn=our_model.predict_proba
+    )
+    
+    # score = exp.as_html()
+    # score = Markup(score)
+    score = str(full_score[1]) + str(full_score[2])
+
+    visual = exp.as_html()
+    visual = Markup(visual)
+
     print("made it")
-    return jsonify(score = score)
+    return jsonify(score = score, visual = visual)
+    # Previously, score was full_score[1] + full_score[2]...just a string
+    # return jsonify(score = score)
 
 
 if __name__ == "__main__":
