@@ -230,7 +230,7 @@ def length_feature(comment):
     length = len(comment)
     return length
 
-def profanity_feature(comment):
+def profanity_feature(comment, punctuation_lst, swearwords):
     comment = str(comment)
     words_in_comment = comment.split()
     for word in words_in_comment:
@@ -240,6 +240,7 @@ def profanity_feature(comment):
         word = word.lower()
         if word in swearwords:
             return True
+    return False
 
 
 #Send in comment text, reddit url, and feature list
@@ -253,7 +254,7 @@ def big_func(comment_text, reddit_url, features, model, cleaned_article_text, no
     #Need to figure out how to do tfidf
     # feature_values['tfidf'] = tfidf_feature(comment_text, cleaned_article_text)
 
-    feature_values['profanity'] = profanity_feature(comment_text)
+    feature_values['profanity'] = profanity_feature(comment_text, punctuation_lst, swearwords)
 
     feature_values['length'] = length_feature(comment_text)
     

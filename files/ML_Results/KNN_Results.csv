@@ -30,3 +30,4 @@ features,test size,number of neighbors,percent correct
 "['WordScore', 'WholeScore', 'tfidf', 'contains_url', 'adjWordScore', 'profanity', 'contains_!', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'length']",0.33,5,66.19301361752517
 "['WordScore', 'WholeScore', 'tfidf', 'contains_url', 'adjWordScore', 'profanity', 'contains_!', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'length']",0.33,5,66.84428656009473
 "['WordScore', 'WholeScore', 'tfidf', 'contains_url', 'adjWordScore', 'profanity', 'contains_!', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'length']",0.33,5,67.64357608052102
+"['WordScore', 'WholeScore', 'tfidf', 'contains_url', 'adjWordScore', 'profanity', 'contains_!', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'length']",0.33,5,65.09769094138544

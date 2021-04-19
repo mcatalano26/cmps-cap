@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, flash, url_for, send_from_directory, jsonify
+from flask import Flask, render_template, request, redirect, flash, url_for, send_from_directory, jsonify, Markup, flash
 import os
 import praw
 from dotenv import load_dotenv
@@ -12,7 +12,6 @@ from lime import lime_tabular
 import pandas as pd
 import numpy as np
 import visualize_comment as vc
-from markupsafe import Markup
 
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
@@ -147,9 +146,15 @@ def scoreComment():
         predict_fn=our_model.predict_proba
     )
     
-    score = exp.as_html()
+    # score = exp.as_html()
+    # score = Markup(score)
+    score = str(full_score[1]) + str(full_score[2])
+
+    visual = exp.as_html()
+    visual = Markup(visual)
+
     print("made it")
-    return jsonify(score = score)
+    return jsonify(score = score, visual = visual)
     # Previously, score was full_score[1] + full_score[2]...just a string
     # return jsonify(score = score)
 

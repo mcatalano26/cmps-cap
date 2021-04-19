@@ -16,3 +16,4 @@ features,test size,percent correct
 "['WordScore', 'WholeScore', 'tfidf', 'contains_url', 'adjWordScore', 'profanity', 'contains_!', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'length']",0.33,74.33392539964476
 "['WordScore', 'WholeScore', 'tfidf', 'contains_url', 'adjWordScore', 'profanity', 'contains_!', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'length']",0.33,75.13321492007104
 "['WordScore', 'WholeScore', 'tfidf', 'contains_url', 'adjWordScore', 'profanity', 'contains_!', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'length']",0.33,74.6299585553582
+"['WordScore', 'WholeScore', 'tfidf', 'contains_url', 'adjWordScore', 'profanity', 'contains_!', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'length']",0.33,75.25162818235643
