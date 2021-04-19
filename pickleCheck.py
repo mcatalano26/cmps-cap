@@ -6,16 +6,35 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from compress_pickle import dump, load
 
-comments_df = pd.read_csv('files/compiled_comments_3_14_2021.csv')
+prior_df = pd.read_csv('files/compiled_comments_3_14_2021.csv')
+prior_df['Label'] = prior_df['action']
+prior_df = prior_df.drop(['action'], axis = 1)
+prior_df = prior_df.replace({'Label': {False: 0, True: 1}})
 
-def set_up_train_test_split(df, feature_list, target_name, test_size):
-    X = df[feature_list]
-    X = X.to_numpy()
-    y = df[target_name]
-    y = y.to_numpy()
+valid_df = pd.read_csv('validation/Validation Comments - Sheet1.csv')
+
+def set_up_train_test_split(prior_df, valid_df, feature_list, target_name, test_size):
+    valid_X = valid_df[feature_list]
+
+    prior_X = prior_df[feature_list]
+
+    valid_y = valid_df[target_name]
+
+    prior_y = prior_df[target_name]
+
     rand_state = random.randint(0, 1000)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = test_size, random_state=rand_state)
+    valid_X_train, valid_X_test, valid_y_train, valid_y_test = train_test_split(valid_X, valid_y, test_size = test_size, random_state=rand_state)
+    X_train, X_test, y_train, y_test = train_test_split(prior_X, prior_y, test_size = test_size, random_state=rand_state)
+    
+    for i in range(1,5):
+        X_train = X_train.append(valid_X_train, ignore_index = True)
+        y_train = y_train.append(valid_y_train, ignore_index = True)
+
+        X_test = X_test.append(valid_X_test, ignore_index = True)
+        y_test = y_test.append(valid_y_test, ignore_index = True)
+        
     return X_train, X_test, y_train, y_test
+
 
 def determine_accuracy(y_test, y_val):
     percent_arr = (y_test == y_val)
@@ -25,9 +44,9 @@ def determine_accuracy(y_test, y_val):
 
 from sklearn.ensemble import RandomForestClassifier
 #Random Forest Classifier
-def random_forest_class_func(df, feature_list, target_name, test_size, estimators, model_name):
+def random_forest_class_func(prior_df, valid_df, feature_list, target_name, test_size, estimators, model_name):
     #set up training and testing split
-    X_train, X_test, y_train, y_test = set_up_train_test_split(df, feature_list, target_name, test_size)
+    X_train, X_test, y_train, y_test = set_up_train_test_split(prior_df, valid_df, feature_list, target_name, test_size)
 
     #Send X_train to file for visualization later
     np.savetxt('files/X_train.csv', X_train, delimiter = ',')
@@ -50,4 +69,4 @@ def random_forest_class_func(df, feature_list, target_name, test_size, estimator
 
 
 features = ['profanity', 'length', 'adjWordScore', 'NER_count', 'NER_match', 'WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
-random_forest_class_func(comments_df, features, 'action', 0.1, 1000, 'latest_model.pkl')
+random_forest_class_func(prior_df, valid_df, features, 'Label', 0.1, 1000, 'updated_model.pkl')
