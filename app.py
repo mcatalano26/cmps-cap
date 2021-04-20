@@ -4,11 +4,14 @@ import praw
 from dotenv import load_dotenv
 load_dotenv()
 import app_backend as ab
+import matplotlib
+matplotlib.use('pdf')
+import matplotlib.pyplot as plt
+import webbrowser
 
 #imports
 import lime
 from lime import lime_tabular
-import pdfkit
 
 import pandas as pd
 import numpy as np
@@ -151,10 +154,9 @@ def scoreComment():
     # score = Markup(score)
     score = str(full_score[1]) + str(full_score[2])
 
-    path_wkhtmltopdf = "C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe"
-    config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
-    exp.save_to_file('files/visual.html')
-    pdfkit.from_file('files/visual.html', 'files/visual.pdf', configuration=config)
+    img = exp.as_pyplot_figure()
+    img.savefig('files/visual.pdf', bbox_inches='tight')
+    webbrowser.open('files/visual.pdf')
 
     print("made it")
     return jsonify(score = score)
