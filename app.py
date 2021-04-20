@@ -4,6 +4,10 @@ import praw
 from dotenv import load_dotenv
 load_dotenv()
 import app_backend as ab
+import matplotlib
+matplotlib.use('pdf')
+import matplotlib.pyplot as plt
+import webbrowser
 
 #imports
 import lime
@@ -150,11 +154,12 @@ def scoreComment():
     # score = Markup(score)
     score = str(full_score[1]) + str(full_score[2])
 
-    visual = exp.as_html()
-    visual = Markup(visual)
+    img = exp.as_pyplot_figure()
+    img.savefig('files/visual.pdf', bbox_inches='tight')
+    webbrowser.open('files/visual.pdf')
 
     print("made it")
-    return jsonify(score = score, visual = visual)
+    return jsonify(score = score)
     # Previously, score was full_score[1] + full_score[2]...just a string
     # return jsonify(score = score)
 

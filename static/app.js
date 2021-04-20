@@ -25,10 +25,6 @@ commentButton.addEventListener("click", function() {
     no_stop_or_url_article_text : no_stop_or_url_article_text},
     function (data) {
         let commentScore = data.score;
-        let visual = data.visual;
-        var uri = "data:text/html," + encodeURIComponent(visual);
-        var newWindow = window.open();
-        newWindow.document.write("<iframe+" + uri + "><\/iframe>");
         scoreHolder.innerHTML = commentScore;
         inProgress.innerHTML = '';
         
