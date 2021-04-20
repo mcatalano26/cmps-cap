@@ -8,6 +8,7 @@ import app_backend as ab
 #imports
 import lime
 from lime import lime_tabular
+import pdfkit
 
 import pandas as pd
 import numpy as np
@@ -150,11 +151,13 @@ def scoreComment():
     # score = Markup(score)
     score = str(full_score[1]) + str(full_score[2])
 
-    visual = exp.as_html()
-    visual = Markup(visual)
+    path_wkhtmltopdf = R"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
+    config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
+    exp.save_to_file('files/visual.html')
+    pdfkit.from_file('files/visual.html', 'files/visual.pdf', configuration=config)
 
     print("made it")
-    return jsonify(score = score, visual = visual)
+    return jsonify(score = score)
     # Previously, score was full_score[1] + full_score[2]...just a string
     # return jsonify(score = score)
 
