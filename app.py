@@ -151,7 +151,7 @@ def scoreComment():
     # score = Markup(score)
     score = str(full_score[1]) + str(full_score[2])
 
-    path_wkhtmltopdf = R"C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe"
+    path_wkhtmltopdf = "C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe"
     config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
     exp.save_to_file('files/visual.html')
     pdfkit.from_file('files/visual.html', 'files/visual.pdf', configuration=config)
