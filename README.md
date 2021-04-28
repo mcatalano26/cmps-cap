@@ -34,7 +34,7 @@ NER_count - Int. The amount of named entities in the comment.<br/>
 NEW_match - Int. The amount of named entities that are the same between the comment and the article.<br/>
 contains_url - Boolean. Are there any urls in the comment?<br/>
 
-* Named entities are real-world objects, such as persons, locations, organizations, products, etc., that can be denoted with a proper name. Stop words are words like 'the', 'or', 'and', 'this', and 'that'. *
+*Named entities are real-world objects, such as persons, locations, organizations, products, etc., that can be denoted with a proper name. Stop words are words like 'the', 'or', 'and', 'this', and 'that'.*
 
 **NEED TO INCLUDE INSTRUCTIONS ON HOW TO RUN LOCALLY**<br/>
 
