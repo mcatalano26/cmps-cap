@@ -11,11 +11,21 @@ Training data was taken from the heavily moderated subreddit, r/neutralnews. We 
 
 The comment dataset was split to train on 90% and test on the remaining 10%. During this testing, we were receiving ~82% accuracy with our model. This, initially, felt very promising. However, we believe that this was slightly misleading. To test the model against what we truly wanted to predict, our team handlabeled 400 comments as 'good' or 'bad' and ran the model on this new validation set. When run on this new validation set, we only received 60% accuracy, which is not nearly as good. We decided to retrain the model using our handlabeled comments as a fraction of the training data. Doing this, we were able to bump our accuracy up to 74%. This is the version of the model that is used in our program currently.<br/>
 
+![alt text](https://github.com/mcatalano26/cmps-cap/blob/master/files/ReadImages/ConfusionMatrices.JPG)
+
 **Prototype and how to run it:**
 
 We have created a webpage that can take in a reddit link, mark all comments as good or bad with the confidence of our model, and take in a new user comment and rate it for you. This webpage, currently, can only be run locally.
 
+![alt text](https://github.com/mcatalano26/cmps-cap/blob/master/files/ReadImages/HomePage.JPG)
+
+![alt text](https://github.com/mcatalano26/cmps-cap/blob/master/files/ReadImages/LinkPage.JPG)
+
 When a new comment is entered, in addition to rating the comment good or bad, the webpage will display a pdf explaining the reasons behind the prediction. The top 10 features that contributed to the model will be displayed in order of their importance. If their importance value is negative, it indicates that that feature contributed to a prediction indicating that the comment is 'bad'. If the importance value is positive, it indicates that the value of the feature helped to imply that the comment is 'good'.<br/>
+
+![alt text](https://github.com/mcatalano26/cmps-cap/blob/master/files/ReadImages/GoodFeatureImportance.JPG)
+
+![alt text](https://github.com/mcatalano26/cmps-cap/blob/master/files/ReadImages/BadFeatureImportance.JPG)
 
 **Feature explanation:**
 
