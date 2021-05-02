@@ -46,7 +46,15 @@ contains_url - Boolean. Are there any urls in the comment?<br/>
 
 *Named entities are real-world objects, such as persons, locations, organizations, products, etc., that can be denoted with a proper name. Stop words are words like 'the', 'or', 'and', 'this', and 'that'.*
 
-**NEED TO INCLUDE INSTRUCTIONS ON HOW TO RUN LOCALLY**<br/>
+**Running this code locally:**
+
+If you want to run this program yourself, simply clone this repository in a folder, and run the following two commands in a terminal located at the newly cloned git repo:<br/>
+*pip install -r requirements.txt*<br/>
+*python -m spacy download en_core_web_lg*<br/>
+
+After this, you can run:<br/>
+*python app.py*<br/>
+in your terminal and the web page will begin running on your local host. Paste in a reddit link to check out what our model thinks of the comments! If the reddit link does not have a news article (url) posted at the top of the thread, the app will not work. Some good subreddits that almost always have articles linked to threads are r/neutralnews and r/neutralpolitics. 
 
 **Future Steps:**
 
