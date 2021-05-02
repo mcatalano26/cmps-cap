@@ -100,16 +100,11 @@ def showPosts():
         if (is_good_comment[0]):
             comment.body = vc.visualize(comment.body)
             comment.body = vc.good_comment(comment.body, confidence)
-            #print(comment.body)
-            #print(comment.body.split())
             comments.append(comment.body.split())
         else :
             comment.body = vc.visualize(comment.body)
             comment.body = vc.bad_comment(comment.body, confidence)
             comments.append(comment.body.split())
-
-    #The below code doesn't work because we are just appending the body of a comment to comments list, not a comments object...this needs to be fixed
-    # comments.sort(reverse = True, key = commentScore)
    
     return render_template('post.html', comments = comments, title = title, selftext = selftext, reddit_url = reddit_link, cleaned_article_text=cleaned_article_text, no_url_article_text=no_url_article_text, no_stop_article_text=no_stop_article_text, no_stop_or_url_article_text=no_stop_or_url_article_text, exp=None)
 
@@ -124,14 +119,13 @@ def scoreComment():
     no_stop_article_text = request.form.get('no_stop_article_text')
     no_stop_or_url_article_text = request.form.get('no_stop_or_url_article_text')
 
-    #To increase speed, we probably shouldn't do this everytime, but it also only takes about 5 seconds to run so it's not that big of a deal
     swearwords_df = pd.read_csv('files/edited-swear-words.csv')
     swearwords = swearwords_df.swear.tolist()
     features = ['profanity', 'length', 'adjWordScore', 'NER_count', 'NER_match', 'WordScore', 'WholeScore', 'contains_url', 'no_url_WordScore', 'no_url_WholeScore', 'WordScoreNoStop', 'WholeScoreNoStop', 'no_url_or_stops_WholeScore', 'no_url_or_stops_WordScore']
     our_model = load("updated_model.pkl", compression="lzma", set_default_extension=False)
     punctuation_lst = [',', '.', '!', '?', '<', '>', '/', ':', ';', '\'', '\"', '[', '{', ']', '}', '|', '\\', '`', '~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+']
 
-    #Lime stuff to add...probably should make this better so it isn't run every time
+    #Lime stuff to add
     new_X_train = np.loadtxt('files/X_train.csv', delimiter = ',')
 
     full_score = ab.judgeComment(comment, reddit_url, swearwords, features, our_model, cleaned_article_text, no_url_article_text, no_stop_article_text, no_stop_or_url_article_text, punctuation_lst)
@@ -149,9 +143,7 @@ def scoreComment():
         data_row=full_score[3][0], 
         predict_fn=our_model.predict_proba
     )
-    
-    # score = exp.as_html()
-    # score = Markup(score)
+
     score = str(full_score[1]) + str(full_score[2])
 
     img = exp.as_pyplot_figure()
@@ -160,8 +152,6 @@ def scoreComment():
 
     print("made it")
     return jsonify(score = score)
-    # Previously, score was full_score[1] + full_score[2]...just a string
-    # return jsonify(score = score)
 
 
 if __name__ == "__main__":
