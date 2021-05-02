@@ -54,7 +54,9 @@ If you want to run this program yourself, simply clone this repository in a fold
 
 After this, you can run:<br/>
 *python app.py*<br/>
-in your terminal and the web page will begin running on your local host. Paste in a reddit link to check out what our model thinks of the comments! If the reddit link does not have a news article (url) posted at the top of the thread, the app will not work. Some good subreddits that almost always have articles linked to threads are r/neutralnews and r/neutralpolitics. 
+in your terminal and the web page will begin running on your local host. Paste in a reddit link to check out what our model thinks of the comments! If the reddit link does not have a news article (url) posted at the top of the thread, the app will not work. Some good subreddits that almost always have articles linked to threads are r/neutralnews and r/neutralpolitics.<br/>
+
+If you are interested in the code that the app is running on, you can see the frontend of the flask app in app.py, templates/base.html, templates/index.html, and templates/post.html. The backend of the flask app can be found in app_backend.py. We train the model in the file pickleCheck.py.
 
 **Future Steps:**
 
